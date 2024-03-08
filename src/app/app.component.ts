@@ -1,26 +1,22 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { UserComponent } from './user/user.component';
+// @ts-ignore
+import { leaflet } from 'leaflet';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, UserComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'GeolocationFE';
 
   constructor(private userComponent: UserComponent) { }
 
-  getUser() {
-    this.userComponent.getAllUsers()
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.log(error);
-      })
+  sendPrmt(action: string) {
+    this.userComponent.getAllUsers(action).then(response => console.log(response.data));
   }
+
 }

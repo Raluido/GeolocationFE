@@ -1,10 +1,11 @@
 import { Component, Injectable } from '@angular/core';
-import axios from 'axios';
+import { CallApiComponent } from '../call-api/call-api.component';
+import { Call } from '@angular/compiler';
 
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [],
+  imports: [CallApiComponent],
   templateUrl: './user.component.html',
   styleUrl: './user.component.css'
 })
@@ -14,10 +15,11 @@ import axios from 'axios';
 })
 
 export class UserComponent {
-  constructor() { }
 
-  getAllUsers() {
-    return axios.get('http://localhost:8080/api/users');
+  constructor(private callApiComponent: CallApiComponent) { }
+
+  getAllUsers(action: string) {
+    return this.callApiComponent.callApi(action);
   }
 }
 
