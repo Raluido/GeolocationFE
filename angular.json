@@ -27,9 +27,7 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": [
-              "node_modules/leaflet/leaflet-src.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -93,5 +91,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
