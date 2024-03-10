@@ -1,0 +1,14 @@
+#pagination {
+    bottom: 1em;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+a {
+    display: inline-block;
+    margin-right: 2em;
+    text-decoration: none;
+    color: gray;
+}

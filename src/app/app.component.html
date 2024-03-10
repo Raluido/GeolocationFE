@@ -1,12 +1,9 @@
-<h1>Hola que tal
-</h1>
+<h1>Bienvenido</h1>
 
-<button (click)="sendPrmt('/users')">Ver Usuarios</button><br><br>
-
-<a routerLink="/page1" routerLinkActive="active" style="cursor:pointer;">Go to page 1</a><br><br>
-
-<a routerLink="/page2" routerLinkActive="active" style="cursor:pointer;">Go to page 2</a><br><br>
-
-<a routerLink="/page3" routerLinkActive="active" style="cursor:pointer;">Go to page 3</a>
 
 <router-outlet></router-outlet>
+
+<div id="pagination">
+    <a routerLink="/page1" routerLinkActive="active" style="cursor:pointer;">Página principal</a>
+    <a routerLink="/page2" routerLinkActive="active" style="cursor:pointer;">Ir al mapa</a>
+</div>
