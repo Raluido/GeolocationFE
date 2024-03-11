@@ -6,7 +6,7 @@ import { Call } from '@angular/compiler';
   standalone: true,
   imports: [],
   template: `
-  <input type="text" placeholder="A dónde quieres ir" (change)="getSearch(newSearch.value)" #newSearch>
+  <input type="text" placeholder="A dónde quieres ir" (keyup)="getSearch($event)" #newSearch>
   `,
   styleUrl: './search.component.css'
 })
@@ -14,8 +14,8 @@ export class SearchComponent {
 
   @Output() newItemEvent = new EventEmitter<string>();
 
-  getSearch(value: string) {
-    this.newItemEvent.emit(value);
+  getSearch(event: Event) {
+    this.newItemEvent.
   }
 
 

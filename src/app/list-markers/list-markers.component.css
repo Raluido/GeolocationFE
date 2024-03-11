@@ -11,6 +11,10 @@ table {
     margin-bottom: 7em;
 }
 
+tr {
+    cursor: pointer;
+}
+
 tr:nth-child(even) {
     background-color: #e0e0d1;
 }

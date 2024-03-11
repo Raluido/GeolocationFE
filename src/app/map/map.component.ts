@@ -19,10 +19,10 @@ export class MapComponent implements AfterViewInit {
   private data: any;
   public currentData: any;
   public currentSearch: any;
+  private popup = L.popup();
 
   constructor(
-    private callApiComponent: CallApiComponent,
-    private elementRef: ElementRef,
+    private callApiComponent: CallApiComponent
   ) { }
 
   getSearch(newSearch: string) {
@@ -41,11 +41,13 @@ export class MapComponent implements AfterViewInit {
       }).addTo(this.map);
 
       this.data.forEach((element: MarkerElement) => {
-        L.marker([element.lat, element.lng]).addTo(this.map);
+        let layer = L.marker([element.lat, element.lng]).addTo(this.map);
+        layer.on('mouseover', (e) => this.showPopup(e.latlng));
       });
 
-      this.map.on('click', (e: any) => {
-        this.onMapClick(e);
+
+      this.map.on('click', (mapPoint: any) => {
+        this.onMapClick(mapPoint);
       });
 
       this.currentData = this.data;
@@ -53,9 +55,10 @@ export class MapComponent implements AfterViewInit {
       .catch((error) => console.log(error));
   }
 
-  private handleClickAddEndPoint() {
-    let lat: any = this.popup.getLatLng()?.lat;
-    let lng: any = this.popup.getLatLng()?.lng;
+  private onMapClick(mapPoint: any) {
+
+    let lat: any = mapPoint.latlng.lat;
+    let lng: any = mapPoint.latlng.lng;
 
     let endPoint = {
       "report": {
@@ -67,42 +70,28 @@ export class MapComponent implements AfterViewInit {
       }
     };
 
-    let endPointJson = JSON.stringify(endPoint);
-    this.callApiComponent.postApiEndPoints(endPointJson)
-      .then(response => response.data)
-      .catch((error) => console.log(error));
+    let text = "Estás seguro de que quieres añadir ésta marca,\n\n Lat: " + lat + "    Lng: " + lng;
 
-    L.marker([lat, lng]).addTo(this.map);
+    if (confirm(text) == true) {
+      let endPointJson = JSON.stringify(endPoint);
+      this.callApiComponent.postApiEndPoints(endPointJson)
+        .then((response) => {
+          L.marker([lat, lng]).addTo(this.map);
+          response.data;
+        })
+        .catch((error) => console.log(error));
+
+    }
 
     this.map.closePopup();
   }
 
-  handleClickDltEndPoint() {
-    alert("Esta operación no se puede realizar aún con ésta versión del sistema.");
-  }
-
-  private popup = L.popup();
-
-  private onMapClick(e: any) {
-    console.log(e.target._popup);
-    this.popup
-      .setLatLng(e.latlng)
-      .setContent(e.latlng.toString() + "<button id='addEndPoint'>Añadir marcador</button><button id='dltEndPoint'>Borrar marcador</button>")
-      .openOn(this.map);
-    this.popup
-    this.elementRef.nativeElement.querySelector('#addEndPoint').addEventListener('click',
-      this.handleClickAddEndPoint.bind(this));
-  }
-
-  showPopup(listedIndex: L.LatLngExpression) {
+  public showPopup(listedIndex: L.LatLngExpression) {
     console.log(listedIndex);
     this.popup
       .setLatLng(listedIndex)
-      .setContent(listedIndex.toString() + "<button id='dltEndPoint'>Borrar marcador</button>")
+      .setContent(listedIndex.toString())
       .openOn(this.map);
-    this.popup
-    this.elementRef.nativeElement.querySelector('#dltEndPoint').addEventListener('click',
-      this.handleClickDltEndPoint.bind(this));
   }
 
   ngAfterViewInit(): void {
