@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import * as L from 'leaflet';
 
 @Component({
   selector: 'app-root',

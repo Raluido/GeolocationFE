@@ -1,0 +1,21 @@
+table,
+th,
+tr,
+td {
+    border: 1px solid gray;
+}
+
+table {
+    margin: 0 auto;
+    margin-top: 5em;
+    margin-bottom: 7em;
+}
+
+tr:nth-child(even) {
+    background-color: #e0e0d1;
+}
+
+td,
+th {
+    padding: .5em;
+}

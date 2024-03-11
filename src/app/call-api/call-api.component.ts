@@ -27,5 +27,11 @@ export class CallApiComponent {
       }
     });
   }
+
+  async getApiLatLng(search: string) {
+    search.replace(' ', '%');
+    console.log(search);
+    return await axios.get(environment.apiUrlGeol + search + '&apiKey=' + environment.apiKey);
+  }
 }
 

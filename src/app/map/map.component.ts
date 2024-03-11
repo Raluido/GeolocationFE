@@ -3,11 +3,12 @@ import * as L from 'leaflet';
 import { CallApiComponent } from '../call-api/call-api.component';
 import { MarkerElement } from '../marker-element';
 import { ListMarkersComponent } from '../list-markers/list-markers.component';
+import { SearchComponent } from '../search/search.component';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [CallApiComponent, ListMarkersComponent],
+  imports: [CallApiComponent, ListMarkersComponent, SearchComponent],
   templateUrl: './map.component.html',
   styleUrl: './map.component.css'
 })
@@ -16,12 +17,17 @@ export class MapComponent implements AfterViewInit {
 
   private map: any;
   private data: any;
+  public currentData: any;
+  public currentSearch: any;
 
   constructor(
     private callApiComponent: CallApiComponent,
     private elementRef: ElementRef,
-    private listMarkersComponent: ListMarkersComponent
   ) { }
+
+  getSearch(newSearch: string) {
+    console.log(newSearch)
+  }
 
   private initMap() {
     this.callApiComponent.getApiEndPoints().then((response) => {
@@ -42,12 +48,12 @@ export class MapComponent implements AfterViewInit {
         this.onMapClick(e);
       });
 
-      this.listMarkersComponent.loadMarkers();
+      this.currentData = this.data;
     })
       .catch((error) => console.log(error));
   }
 
-  private handleClick() {
+  private handleClickAddEndPoint() {
     let lat: any = this.popup.getLatLng()?.lat;
     let lng: any = this.popup.getLatLng()?.lng;
 
@@ -71,17 +77,32 @@ export class MapComponent implements AfterViewInit {
     this.map.closePopup();
   }
 
+  handleClickDltEndPoint() {
+    alert("Esta operación no se puede realizar aún con ésta versión del sistema.");
+  }
+
   private popup = L.popup();
 
   private onMapClick(e: any) {
+    console.log(e.target._popup);
     this.popup
       .setLatLng(e.latlng)
       .setContent(e.latlng.toString() + "<button id='addEndPoint'>Añadir marcador</button><button id='dltEndPoint'>Borrar marcador</button>")
       .openOn(this.map);
-
     this.popup
     this.elementRef.nativeElement.querySelector('#addEndPoint').addEventListener('click',
-      this.handleClick.bind(this));
+      this.handleClickAddEndPoint.bind(this));
+  }
+
+  showPopup(listedIndex: L.LatLngExpression) {
+    console.log(listedIndex);
+    this.popup
+      .setLatLng(listedIndex)
+      .setContent(listedIndex.toString() + "<button id='dltEndPoint'>Borrar marcador</button>")
+      .openOn(this.map);
+    this.popup
+    this.elementRef.nativeElement.querySelector('#dltEndPoint').addEventListener('click',
+      this.handleClickDltEndPoint.bind(this));
   }
 
   ngAfterViewInit(): void {

@@ -1,35 +1,48 @@
-import { Component, Injectable } from '@angular/core';
-import { CallApiComponent } from '../call-api/call-api.component';
+import { Component, Injectable, Input } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
-import { MarkerElement } from '../marker-element';
+import { MapComponent } from '../map/map.component';
+import { LatLng, latLng } from 'leaflet';
 
 @Component({
   selector: 'app-list-markers',
   standalone: true,
-  imports: [CallApiComponent, CommonModule, NgFor],
+  imports: [CommonModule, NgFor],
   template: `
-  <div *ngIf="marks && marks.length > 0">
-  <ul *ngFor="let marker of marks">
-    <li>{{ marker.lat }}</li>
-  </ul>
-</div>
+      <table class="table">
+            <thead class="">
+                <tr class="">
+                    <th class="">CCAA</th>
+                    <th class="">Provincia</th>
+                    <th class="">Ciudad</th>
+                    <th class="">Proyecto</th>
+                    <th class="">Descriptión</th>
+                </tr>
+            </thead>
+            <tbody class="">
+              @for(index of data; track index.lat; let i = $index) {
+                <tr class="" (click)="showPopup(i)">
+                  <td class="">{{index.ccaa}}</td>
+                  <td class="">{{index.province}}</td>
+                  <td class="">{{index.city}}</td>
+                  <td class="">{{index.project}}</td>
+                  <td class="">{{index.description}}</td>
+                </tr>
+                }
+            </tbody>
+        </table>
   `,
-  styles: ``,
-})
-
-@Injectable({
-  providedIn: 'root'
+  styleUrl: './list-markers.component.css',
 })
 
 export class ListMarkersComponent {
 
-  marks: MarkerElement[] = [];
+  constructor(private mapComponent: MapComponent) { }
 
-  constructor(private callApiComponent: CallApiComponent) { }
+  @Input() data: any;
 
-  loadMarkers() {
-    this.callApiComponent.getApiEndPoints().then((response) => {
-      this.marks = response.data;
-    });
+  showPopup(index: number) {
+    const latLngObj: LatLng = new LatLng(this.data[index].lat, this.data[index].lng);
+    this.mapComponent.showPopup(latLngObj);
   }
 }
+
