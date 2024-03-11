@@ -1,38 +1,35 @@
 import { Component, Injectable } from '@angular/core';
+import { CallApiComponent } from '../call-api/call-api.component';
+import { CommonModule, NgFor } from '@angular/common';
+import { MarkerElement } from '../marker-element';
 
 @Component({
   selector: 'app-list-markers',
   standalone: true,
-  imports: [],
+  imports: [CallApiComponent, CommonModule, NgFor],
   template: `
-    <!-- <li *ngFor="let marker of data; trackBy: trackById">{{ marker }}</li> -->
+  <div *ngIf="marks && marks.length > 0">
+  <ul *ngFor="let marker of marks">
+    <li>{{ marker.lat }}</li>
+  </ul>
+</div>
   `,
   styles: ``,
 })
 
-// @Injectable({
-//   providedIn: 'root'
-// })
+@Injectable({
+  providedIn: 'root'
+})
 
 export class ListMarkersComponent {
 
-  // private data: any;
+  marks: MarkerElement[] = [];
 
-  // constructor(private callApiComponent: CallApiComponent) { }
+  constructor(private callApiComponent: CallApiComponent) { }
 
-  // private loadMarkers() {
-  //   this.callApiComponent.getApiEndPoints().then((response) => {
-  //     console.log(response.data);
-  //     this.data = response.data;
-  //   });
-  // }
-
-  public test() {
-    console.log("yeah");
+  loadMarkers() {
+    this.callApiComponent.getApiEndPoints().then((response) => {
+      this.marks = response.data;
+    });
   }
-
-  // ngAfterViewInit(): void {
-  //   console.log("aqui");
-  //   this.loadMarkers();
-  // }
 }

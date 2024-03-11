@@ -41,6 +41,8 @@ export class MapComponent implements AfterViewInit {
       this.map.on('click', (e: any) => {
         this.onMapClick(e);
       });
+
+      this.listMarkersComponent.loadMarkers();
     })
       .catch((error) => console.log(error));
   }
@@ -84,6 +86,5 @@ export class MapComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.initMap();
-    this.listMarkersComponent.test();
   }
 }
