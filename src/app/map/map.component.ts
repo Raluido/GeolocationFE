@@ -25,34 +25,34 @@ export class MapComponent implements AfterViewInit {
     private callApiComponent: CallApiComponent
   ) { }
 
-  getSearch(newSearch: string) {
-    console.log(newSearch)
-  }
-
-  private initMap() {
+  private initMap(latLng?: number[]) {
     this.callApiComponent.getApiEndPoints().then((response) => {
+      latLng = [28.300, -16.500];
       this.data = response.data;
+      this.map = L.map('map').setView([latLng[0], latLng[1]], 10);
 
-      this.map = L.map('map').setView([28.300, -16.500], 10);
+      this.renderMap();
 
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-      }).addTo(this.map);
-
-      this.data.forEach((element: MarkerElement) => {
-        let layer = L.marker([element.lat, element.lng]).addTo(this.map);
-        layer.on('mouseover', (e) => this.showPopup(e.latlng));
-      });
-
-
-      this.map.on('click', (mapPoint: any) => {
-        this.onMapClick(mapPoint);
-      });
-
-      this.currentData = this.data;
     })
       .catch((error) => console.log(error));
+  }
+
+  private renderMap() {
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(this.map);
+
+    this.data.forEach((element: MarkerElement) => {
+      let layer = L.marker([element.lat, element.lng]).addTo(this.map);
+      layer.on('mouseover', (e) => this.showPopup(e.latlng));
+    });
+
+    this.map.on('click', (mapPoint: any) => {
+      this.onMapClick(mapPoint);
+    });
+
+    this.currentData = this.data;
   }
 
   private onMapClick(mapPoint: any) {
@@ -87,7 +87,6 @@ export class MapComponent implements AfterViewInit {
   }
 
   public showPopup(listedIndex: L.LatLngExpression) {
-    console.log(listedIndex);
     this.popup
       .setLatLng(listedIndex)
       .setContent(listedIndex.toString())
@@ -97,4 +96,5 @@ export class MapComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.initMap();
   }
+
 }
