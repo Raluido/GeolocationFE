@@ -1,3 +1,13 @@
+.mapContainer {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.endPoints {
+    overflow-x: auto;
+    width: 40%;
+}
+
 #map {
     width: 40%;
     height: 70vh;

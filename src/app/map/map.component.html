@@ -1,7 +1,8 @@
 <app-search style="margin-left:5em;"></app-search>
-<div class="" style="display:flex; justify-content: space-evenly;">
+<button class="" (click)="renderMap()">Actualizar</button>
+<div class="mapContainer">
     <div id="map"></div>
-    <div class="" style="overflow-x: auto; width: 40%;">
+    <div class="endPoints">
         <app-list-markers [data]="currentData"></app-list-markers>
         <app-pagination [paginates]="this.totalPagesArr"></app-pagination>
     </div>

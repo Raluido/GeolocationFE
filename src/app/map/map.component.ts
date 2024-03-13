@@ -5,7 +5,7 @@ import { MarkerElement } from '../marker-element';
 import { ListMarkersComponent } from '../list-markers/list-markers.component';
 import { SearchComponent } from '../search/search.component';
 import { PaginationComponent } from '../pagination/pagination.component';
-import { throwError } from 'rxjs';
+import { filter, throwError } from 'rxjs';
 
 @Component({
   selector: 'app-map',
@@ -61,9 +61,10 @@ export class MapComponent implements AfterViewInit {
       this.map.removeLayer(marker);
     });
 
-    this.markers = [];
+    let filterByArea = this.filterByArea(this.data);
+    let dataPaginated = this.pagination(currentPage, filterByArea);
 
-    let dataPaginated = this.pagination(currentPage, this.data);
+    this.markers = [];
 
     dataPaginated.forEach((element: MarkerElement) => {
       const marker = L.marker([element.lat, element.lng]).addTo(this.map);
@@ -131,6 +132,20 @@ export class MapComponent implements AfterViewInit {
     this.totalPagesArr = totalPagesArr;
 
     return pageItems;
+  }
+
+  private filterByArea(data: any) {
+    let area = this.map.getBounds();
+    let filterItems: any = [];
+
+
+    data.forEach((element: any, key: any) => {
+      if (element.lat < area._southWest.lat || element.lat > area._northEast.lat || element.lng < area._southWest.lng || element.lng > area._northEast.lng) {
+      } else {
+        filterItems.push(element);
+      }
+    });
+    return filterItems;
   }
 
   ngAfterViewInit(): void {

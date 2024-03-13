@@ -10,8 +10,12 @@ table {
     margin-bottom: 7em;
 }
 
-tr {
+tbody tr {
     cursor: pointer;
+}
+
+tbody tr:hover {
+    background-color: lightblue;
 }
 
 tr:nth-child(even) {

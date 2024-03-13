@@ -1,8 +1,35 @@
-<h1>Bienvenido</h1>
+<h1>Bienvenido al test de Agresta por Raúl Luis</h1>
 
-<router-outlet></router-outlet>
+<h4 class="">
+    Planteamiento e Instrucciones
+</h4>
+
+<section class="">
+    <h5 class="">
+        La propuesta para ésta actividad consiste en la realización de una aplicación web que
+        haga llamadas a una API REST para obtener y guardar datos de la base de datos y en la misma.
+        Los datos con los que vamos a trabajar son geolocalizadores, puesto que vamos a trabajar con mapas
+        virtuales a través de un plugin de javascript llamado Leaflet.
+    </h5>
+    <p class="">
+        Por tanto, en mi caso, he utilizado el siguiente software:
+    </p>
+    <ul class="">
+        <li class="">Aplicación principal con Angular (Frontend)</li>
+        <li class="">Los estilos con material de Angular</li>
+        <li class="">Plugin en javascript Leaflet</li>
+        <li class="">Api REST de Agresta en CodeIgniter con Base de Datos Postgre</li>
+        <li class="">Api REST de Geoapify para obtener los datos de lat y lng a partir de una dirección</li>
+    </ul>
+    <p class=""></p>
+    <p class=""></p>
+    <p class=""></p>
+    <p class=""></p>
+</section>
 
 <div id="pagination">
-    <a routerLink="/page1" routerLinkActive="active" style="cursor:pointer;">Página principal</a>
+    <a routerLink="/page1" routerLinkActive="active" style="cursor:pointer;">Agresta test</a>
     <a routerLink="/page2" routerLinkActive="active" style="cursor:pointer;">Ir al mapa</a>
 </div>
+
+<router-outlet></router-outlet>
