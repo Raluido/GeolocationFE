@@ -8,11 +8,13 @@ import { CallApiComponent } from '../call-api/call-api.component';
   standalone: true,
   imports: [CallApiComponent, MapComponent],
   template: `
+  <div id="searchContainer">
   <input type="text" placeholder="A dónde quieres ir" (keydown.enter)="getSearch($event)">
   <div class="results" #resultsNode>
     @for(index of results; track index.properties.lat){
       <div class="result" (click)="goToSearch(index)">{{ index.properties.country }}, {{ index.properties.city }}, {{ index.properties.address }}</div>
     }
+  </div>
   </div>
   `,
   styleUrl: './search.component.css'

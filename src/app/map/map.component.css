@@ -3,6 +3,13 @@
     justify-content: space-evenly;
 }
 
+#updateBtn {
+    position: absolute;
+    z-index: 9999;
+    bottom: 1.5em;
+    right: .5em;
+}
+
 .endPoints {
     overflow-x: auto;
     width: 40%;
@@ -12,4 +19,5 @@
     width: 40%;
     height: 70vh;
     margin-top: 5em;
+    position: relative;
 }

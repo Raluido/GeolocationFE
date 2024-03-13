@@ -1,9 +1,10 @@
-<app-search style="margin-left:5em;"></app-search>
-<button class="" (click)="renderMap()">Actualizar</button>
 <div class="mapContainer">
-    <div id="map"></div>
+    <div id="map">
+        <app-search style="margin-left:5em;"></app-search>
+        <button id="updateBtn" (click)="renderMap()">Actualizar</button>
+    </div>
     <div class="endPoints">
         <app-list-markers [data]="currentData"></app-list-markers>
-        <app-pagination [paginates]="this.totalPagesArr"></app-pagination>
     </div>
 </div>
+<app-pagination [paginates]="this.totalPagesArr"></app-pagination>

@@ -1,6 +1,6 @@
-h1 {
-    margin-top: 1em;
-    padding-left: 3em;
+h2 {
+    width: fit-content;
+    margin: 1em auto 2em auto;
 }
 
 #pagination {
