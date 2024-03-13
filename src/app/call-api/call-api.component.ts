@@ -16,21 +16,21 @@ import { environment } from '../../environments/environment.development';
 
 export class CallApiComponent {
 
-  async getApiEndPoints() {
-    return await axios.get(environment.apiUrl);
+  getApiEndPoints() {
+    return axios.get(environment.apiUrl);
   }
 
-  async postApiEndPoints(endPoint: any) {
-    return await axios.post(environment.apiUrl, endPoint, {
+  postApiEndPoints(endPoint: any) {
+    return axios.post(environment.apiUrl, endPoint, {
       headers: {
         'Content-type': 'application/json'
       }
     });
   }
 
-  async getApiLatLng(search: string) {
+  getApiLatLng(search: string) {
     search.replace(' ', '%');
-    return await axios.get(environment.apiUrlGeol + search + '&apiKey=' + environment.apiKey);
+    return axios.get(environment.apiUrlGeol + search + '&apiKey=' + environment.apiKey);
   }
 }
 

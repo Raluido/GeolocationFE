@@ -4,11 +4,13 @@ import { CallApiComponent } from '../call-api/call-api.component';
 import { MarkerElement } from '../marker-element';
 import { ListMarkersComponent } from '../list-markers/list-markers.component';
 import { SearchComponent } from '../search/search.component';
+import { PaginationComponent } from '../pagination/pagination.component';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [CallApiComponent, ListMarkersComponent, SearchComponent],
+  imports: [CallApiComponent, ListMarkersComponent, SearchComponent, PaginationComponent],
   templateUrl: './map.component.html',
   styleUrl: './map.component.css'
 })
@@ -17,42 +19,63 @@ export class MapComponent implements AfterViewInit {
 
   private map: any;
   private data: any;
-  public currentData: any;
-  public currentSearch: any;
   private popup = L.popup();
+  private markers: L.Marker[] = [];
+  public currentData: any;
+  public totalPagesArr: any;
 
   constructor(
     private callApiComponent: CallApiComponent
   ) { }
 
-  private initMap(latLng?: number[]) {
-    this.callApiComponent.getApiEndPoints().then((response) => {
-      latLng = [28.300, -16.500];
-      this.data = response.data;
-      this.map = L.map('map').setView([latLng[0], latLng[1]], 10);
-
-      this.renderMap();
-
-    })
+  public initMap(latLng: any = []) {
+    this.callApiComponent.getApiEndPoints()
+      .then((response) => {
+        this.data = response.data;
+        if (latLng.length == 0) {
+          latLng = [28.300, -16.500];
+          this.map = L.map('map').setView([latLng[0], latLng[1]], 10);
+          this.renderMap();
+        }
+        else {
+          latLng = [latLng.lat, latLng.lon];
+          this.map.remove();
+          this.map = L.map('map').setView([latLng[0], latLng[1]], 10);
+          this.renderMap();
+        }
+      })
       .catch((error) => console.log(error));
   }
 
-  private renderMap() {
+  public renderMap(currentPage: number = 1) {
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(this.map);
+    this.addStuffToMap(currentPage);
+  }
 
-    this.data.forEach((element: MarkerElement) => {
-      let layer = L.marker([element.lat, element.lng]).addTo(this.map);
-      layer.on('mouseover', (e) => this.showPopup(e.latlng));
+  private addStuffToMap(currentPage: any) {
+
+    this.markers.forEach((marker: any) => {
+      this.map.removeLayer(marker);
+    });
+
+    this.markers = [];
+
+    let dataPaginated = this.pagination(currentPage, this.data);
+
+    dataPaginated.forEach((element: MarkerElement) => {
+      const marker = L.marker([element.lat, element.lng]).addTo(this.map);
+      this.markers.push(marker);
+      marker.on('mouseover', (e) => this.showPopup(e.latlng));
     });
 
     this.map.on('click', (mapPoint: any) => {
       this.onMapClick(mapPoint);
     });
 
-    this.currentData = this.data;
+    this.currentData = dataPaginated;
   }
 
   private onMapClick(mapPoint: any) {
@@ -91,6 +114,23 @@ export class MapComponent implements AfterViewInit {
       .setLatLng(listedIndex)
       .setContent(listedIndex.toString())
       .openOn(this.map);
+  }
+
+  private pagination(page: number, items: []) {
+    let itemsPerPage = 10;
+    let totalPages = Math.floor(items.length / itemsPerPage) + 1;
+    let startIndex = (page - 1) * itemsPerPage;
+    let endIndex = startIndex + itemsPerPage;
+    let pageItems: any = items.slice(startIndex, endIndex);
+
+    let totalPagesArr = new Array(totalPages);
+    for (let index = 0; index < totalPagesArr.length; index++) {
+      totalPagesArr[index] = index + 1;
+    }
+
+    this.totalPagesArr = totalPagesArr;
+
+    return pageItems;
   }
 
   ngAfterViewInit(): void {

@@ -1,0 +1,13 @@
+.results {
+    background-color: white;
+    margin: 1em;
+    position: absolute;
+    z-index: 9999;
+    left: 4em;
+    border-radius: .5em;
+}
+
+.result {
+    margin: .5em;
+    padding: .5em;
+}

@@ -6,7 +6,6 @@ td {
 }
 
 table {
-    margin: 0 auto;
     margin-top: 5em;
     margin-bottom: 7em;
 }
@@ -21,5 +20,5 @@ tr:nth-child(even) {
 
 td,
 th {
-    padding: .5em;
+    padding: .2em;
 }

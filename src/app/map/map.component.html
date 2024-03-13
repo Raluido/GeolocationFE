@@ -1,3 +1,8 @@
 <app-search style="margin-left:5em;"></app-search>
-<div id="map"></div>
-<app-list-markers [data]="currentData"></app-list-markers>
+<div class="" style="display:flex; justify-content: space-evenly;">
+    <div id="map"></div>
+    <div class="" style="overflow-x: auto; width: 40%;">
+        <app-list-markers [data]="currentData"></app-list-markers>
+        <app-pagination [paginates]="this.totalPagesArr"></app-pagination>
+    </div>
+</div>
