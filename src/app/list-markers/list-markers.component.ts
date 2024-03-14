@@ -1,7 +1,7 @@
-import { Component, Injectable, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
 import { MapComponent } from '../map/map.component';
-import { LatLng, latLng } from 'leaflet';
+import { LatLng } from 'leaflet';
 
 @Component({
   selector: 'app-list-markers',

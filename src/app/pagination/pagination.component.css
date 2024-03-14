@@ -1,0 +1,12 @@
+#pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 5em;
+}
+
+#pages {
+    display: inline-block;
+    margin-right: 1em;
+    margin-bottom: 2em;
+    cursor: pointer;
+}

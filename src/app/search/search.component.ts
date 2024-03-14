@@ -1,5 +1,4 @@
-import { Component, Renderer2, ViewChild, ElementRef } from '@angular/core';
-import { Call } from '@angular/compiler';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { MapComponent } from '../map/map.component';
 import { CallApiComponent } from '../call-api/call-api.component';
 
@@ -26,7 +25,7 @@ export class SearchComponent {
 
   @ViewChild('resultsNode') resultsNode!: ElementRef;
 
-  constructor(private callApiComponent: CallApiComponent, private mapComponent: MapComponent, private el: ElementRef, private renderer: Renderer2) { }
+  constructor(private callApiComponent: CallApiComponent, private mapComponent: MapComponent) { }
 
   getSearch(event: any) {
     const promise = this.callApiComponent.getApiLatLng(event.target.value);
@@ -40,6 +39,7 @@ export class SearchComponent {
 
   goToSearch(index: any) {
     this.resultsNode.nativeElement.style.display = "none";
-    this.mapComponent.initMap(index.properties);
+    let latLng = { 'lat': index.properties.lat, 'lng': index.properties.lon };
+    this.mapComponent.initMap(latLng);
   }
 }

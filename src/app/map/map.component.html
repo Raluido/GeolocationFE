@@ -1,10 +1,28 @@
-<div class="mapContainer">
-    <div id="map">
-        <app-search style="margin-left:5em;"></app-search>
-        <button id="updateBtn" (click)="renderMap()">Actualizar</button>
+<div class="mainContainer">
+    <div class="mapContainer">
+        <div class="searchResetContainer">
+            <app-search></app-search>
+            <button id="updateBtn" (click)="addStuffToMap()">Actualizar</button>
+        </div>
+        <div id="map">
+        </div>
     </div>
     <div class="endPoints">
-        <app-list-markers [data]="currentData"></app-list-markers>
+        <h3 class="">Listado de localizaciones</h3>
+        <app-list-markers [data]="currentData">
+        </app-list-markers>
+        <div class="addEndPoint" #addAddEndPointNode>
+            <div class="innerAddEndPoint">
+                <h3 class="">Crear nuevo marcador</h3>
+                <label for="name" class="">Nombre</label>
+                <input type="text" placeholder="Nombre" id="name" class="" #addNameNode>
+                <label for="description" class="">Descripción</label>
+                <input type="text" placeholder="Descripción" id="description" class="" #addDescriptionNode>
+                <button (click)="addEndPoint()">Añadir</button>
+                <button (click)="closeAddEndPoint()">Cancelar</button>
+            </div>
+        </div>
     </div>
 </div>
+
 <app-pagination [paginates]="this.totalPagesArr"></app-pagination>

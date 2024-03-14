@@ -2,14 +2,14 @@
     <h4 class="">
         Planteamiento e Instrucciones
     </h4>
-    <h5 class="">
-            La propuesta para ésta actividad consiste en la realización de una aplicación web que
+    <h4 class="">
+        La propuesta para ésta actividad consiste en la realización de una aplicación web que
         haga llamadas a una API REST para obtener y guardar datos de la base de datos y en la misma.
         Los datos con los que vamos a trabajar son geolocalizadores, puesto que vamos a trabajar con mapas
         virtuales a través de un plugin de javascript llamado Leaflet.
-    </h5>
+    </h4>
     <p class="">
-            Por tanto, en mi caso, he utilizado el siguiente software:
+        Por tanto, en mi caso, he utilizado el siguiente software:
     </p>
     <ul class="">
         <li class="">Aplicación principal con Angular (Frontend)</li>
@@ -18,8 +18,34 @@
         <li class="">Api REST de Agresta en CodeIgniter con Base de Datos Postgre</li>
         <li class="">Api REST de Geoapify para obtener los datos de lat y lng a partir de una dirección</li>
     </ul>
-    <p class=""></p>
-    <p class=""></p>
-    <p class=""></p>
-    <p class=""></p>
+    <p class="">
+        Funcionamiento:
+    </p>
+    <p class="">
+        En la página de ejecución tenemos el mapa, un buscador de localizaciones mediante una dirección. Hay que
+        escribir
+        cada palabra dejando espacios libres para que la API la pueda reconocer. Los puntos que se encuentren dentro del
+        área
+        resultante se mostrarán en éste así como en el listado de la derecha. Si son más de 10 se paginarán.
+        Cada línea del listado se puede clicar para que se ejecuten los popups. Si se pasa el ratón sobre los puntos en
+        el
+        mapa también se ejecutarán.
+        El botón de actualizar permite que cuando nos movamos a lo largo del mapa mediante el ratón, éste nos devolverá
+        los puntos
+        que se encuentran en ésta área.
+        Finalmente podemos clicar en el punto que se deseemos y se desplegará un cuadro para poder añadir más endpoints.
+    </p>
+    <p class="">
+        Dudas
+    </p>
+    <p class="">
+        En una de las pruebas añadi por error una marca en el océano que sale sin datos. Entiendo que la base de datos
+        filtra
+        éstos campos de alguna manera.
+        Tuve problemas cuando añadía nuevos puntos ya que al trabajar axios de forma sincrónica y el método post ser más
+        lento, tuve que añadir
+        "finally" y creo que ahora si que se cargan los nuevos puntos sin tener que actualizar.
+    </p>
+
+
 </section>
