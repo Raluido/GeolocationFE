@@ -35,3 +35,12 @@ a {
 a:hover {
     color: darkolivegreen;
 }
+
+footer {
+    margin: 7em 0 1.5em 0;
+}
+
+footer h5 {
+    padding-right: 2em;
+    text-align: end;
+}
