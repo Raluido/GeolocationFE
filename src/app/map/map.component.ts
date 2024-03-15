@@ -23,10 +23,10 @@ export class MapComponent implements AfterViewInit {
   private map: any;
   private data: any;
   private popup = L.popup();
-  private latLng: any;
+  private latLng: L.LatLngLiteral;
   private markers: L.Marker[] = [];
-  public currentData: any;
-  public totalPagesArr: any;
+  public currentData: Array<number>;
+  public totalPagesArr: Array<number>;
 
   constructor(
     private callApiComponent: CallApiComponent
@@ -34,11 +34,11 @@ export class MapComponent implements AfterViewInit {
 
   // initMap se encarga de cargar la localización por defecto si no se indica una en la búsqueda
 
-  public initMap(latLng = { 'lat': null, 'lng': null }) {
+  public initMap(latLng?: L.LatLngLiteral) {
     this.callApiComponent.getApiEndPoints()
       .then((response) => {
         this.data = response.data;
-        if (latLng.lat == null && latLng.lng == null) {
+        if (latLng === undefined) {
           this.latLng = { 'lat': 28.300, 'lng': -16.500 };
           this.map = L.map('map').setView([this.latLng.lat, this.latLng.lng], 10);
           this.renderMap();
@@ -173,3 +173,7 @@ export class MapComponent implements AfterViewInit {
   }
 
 }
+
+
+
+
