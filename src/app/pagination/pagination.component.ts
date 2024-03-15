@@ -18,7 +18,7 @@ export class PaginationComponent {
 
   constructor(private mapComponent: MapComponent) { }
 
-  @Input() paginates: any;
+  @Input() paginates: Array<number>;
 
   goToPage(event: any) {
     this.mapComponent.addStuffToMap(event.target.innerHTML);

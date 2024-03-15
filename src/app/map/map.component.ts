@@ -20,12 +20,12 @@ export class MapComponent implements AfterViewInit {
   @ViewChild('addNameNode') addNameNode!: ElementRef;
   @ViewChild('addDescriptionNode') addDescriptionNode!: ElementRef;
 
-  private map: any;
-  private data: any;
+  private map: L.Map;
+  private data: Array<MarkerElement>;
   private popup = L.popup();
   private latLng: L.LatLngLiteral;
   private markers: L.Marker[] = [];
-  public currentData: Array<number>;
+  public currentData: Array<MarkerElement>;
   public totalPagesArr: Array<number>;
 
   constructor(
@@ -71,7 +71,7 @@ export class MapComponent implements AfterViewInit {
 
   public addStuffToMap(currentPage = 1) {
 
-    this.markers.forEach((marker: any) => {
+    this.markers.forEach((marker: L.Marker) => {
       this.map.removeLayer(marker);
     });
 
@@ -136,12 +136,12 @@ export class MapComponent implements AfterViewInit {
       .openOn(this.map);
   }
 
-  private pagination(page: number, items: []) {
+  private pagination(page: number, items: Array<MarkerElement>) {
     let itemsPerPage = 10;
     let totalPages = Math.floor(items.length / itemsPerPage) + 1;
     let startIndex = (page - 1) * itemsPerPage;
     let endIndex = startIndex + itemsPerPage;
-    let pageItems: any = items.slice(startIndex, endIndex);
+    let pageItems: Array<MarkerElement> = items.slice(startIndex, endIndex);
 
     let totalPagesArr = new Array(totalPages);
     for (let index = 0; index < totalPagesArr.length; index++) {
@@ -155,12 +155,12 @@ export class MapComponent implements AfterViewInit {
 
   // se filtran los puntos que no entren en el mapa
 
-  private filterByArea(data: any) {
+  private filterByArea(data: Array<MarkerElement>) {
     let area = this.map.getBounds();
-    let filterItems: any = [];
+    let filterItems: Array<MarkerElement> = [];
 
-    data.forEach((element: any) => {
-      if (element.lat < area._southWest.lat || element.lat > area._northEast.lat || element.lng < area._southWest.lng || element.lng > area._northEast.lng) {
+    data.forEach((element: MarkerElement) => {
+      if (element.lat < area.getSouthWest().lat || element.lat > area.getNorthEast().lat || element.lng < area.getSouthWest().lng || element.lng > area.getNorthEast().lng) {
       } else {
         filterItems.push(element);
       }

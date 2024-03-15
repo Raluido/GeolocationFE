@@ -1,6 +1,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { MapComponent } from '../map/map.component';
 import { CallApiComponent } from '../call-api/call-api.component';
+import { Feature } from '../marker-element';
 
 @Component({
   selector: 'app-search',
@@ -11,7 +12,7 @@ import { CallApiComponent } from '../call-api/call-api.component';
   <input type="text" placeholder="A dónde quieres ir" (keydown.enter)="getSearch($event)">
   <div class="results" #resultsNode>
     @for(index of results; track index.properties.lat){
-      <div class="result" (click)="goToSearch(index)">{{ index.properties.country }}, {{ index.properties.city }}, {{ index.properties.address }}</div>
+      <div class="result" (click)="goToSearch(index)">{{ index.properties.country }}, {{ index.properties.city }}, {{ index.properties.address_line1 }}</div>
     }
   </div>
   </div>
@@ -21,7 +22,7 @@ import { CallApiComponent } from '../call-api/call-api.component';
 
 export class SearchComponent {
 
-  public results: any;
+  public results: Array<Feature>;
 
   @ViewChild('resultsNode') resultsNode!: ElementRef;
 
@@ -37,7 +38,7 @@ export class SearchComponent {
       .catch(error => console.log(error));
   };
 
-  goToSearch(index: any) {
+  goToSearch(index: Feature) {
     this.resultsNode.nativeElement.style.display = "none";
     let latLng = { 'lat': index.properties.lat, 'lng': index.properties.lon };
     this.mapComponent.initMap(latLng);

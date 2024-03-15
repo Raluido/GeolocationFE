@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
 import { MapComponent } from '../map/map.component';
 import { LatLng } from 'leaflet';
+import { MarkerElement } from '../marker-element';
 
 @Component({
   selector: 'app-list-markers',
@@ -38,7 +39,7 @@ export class ListMarkersComponent {
 
   constructor(private mapComponent: MapComponent) { }
 
-  @Input() data: any;
+  @Input() data: Array<MarkerElement>;
 
   showPopup(index: number) {
     const latLngObj: LatLng = new LatLng(this.data[index].lat, this.data[index].lng);
