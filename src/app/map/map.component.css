@@ -3,7 +3,16 @@
     justify-content: space-evenly;
 }
 
-#updateBtn {}
+.selectedApi {
+    margin-bottom: 3em;
+    border-bottom: 1px solid lightblue;
+    border-top: 1px solid lightblue;
+    padding: 1em 0;
+}
+
+.selectedApi label {
+    margin-right: 2em;
+}
 
 #map {
     width: 100%;
@@ -24,6 +33,8 @@
 
 .mapContainer {
     width: 40%;
+    padding: 0em 1em 1em 1em;
+    border: 1px solid lightgray;
 }
 
 .addEndPoint {
@@ -63,7 +74,7 @@
 .searchResetContainer {
     display: flex;
     justify-content: space-evenly;
-    margin-bottom: 2em;
+    margin: 1.5em;
 }
 
 .searchResetContainer button {

@@ -16,7 +16,9 @@ import { MarkerElement } from '../marker-element';
                     <th class="">Provincia</th>
                     <th class="">Ciudad</th>
                     <th class="">Proyecto</th>
-                    <th class="">Descriptión</th>
+                    <th class="">Descripción</th>
+                    <th class="">Latitud</th>
+                    <th class="">Longitud</th>
                 </tr>
             </thead>
             <tbody class="">
@@ -27,6 +29,8 @@ import { MarkerElement } from '../marker-element';
                   <td class="">{{index.city}}</td>
                   <td class="">{{index.project}}</td>
                   <td class="">{{index.description}}</td>
+                  <td class="">{{index.lat}}</td>
+                  <td class="">{{index.lng}}</td>
                 </tr>
                 }
             </tbody>

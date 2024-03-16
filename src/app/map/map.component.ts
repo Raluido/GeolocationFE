@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ViewChild, ElementRef, Renderer2 } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef, Injectable } from '@angular/core';
 import * as L from 'leaflet';
 import { CallApiComponent } from '../call-api/call-api.component';
 import { MarkerElement } from '../marker-element';
@@ -12,6 +12,10 @@ import { PaginationComponent } from '../pagination/pagination.component';
   imports: [CallApiComponent, ListMarkersComponent, SearchComponent, PaginationComponent],
   templateUrl: './map.component.html',
   styleUrl: './map.component.css'
+})
+
+@Injectable({
+  providedIn: 'root'
 })
 
 export class MapComponent implements AfterViewInit {
@@ -34,23 +38,22 @@ export class MapComponent implements AfterViewInit {
 
   // initMap se encarga de cargar la localización por defecto si no se indica una en la búsqueda
 
-  public initMap(latLng?: L.LatLngLiteral) {
-    this.callApiComponent.getApiEndPoints()
-      .then((response) => {
-        this.data = response.data;
-        if (latLng === undefined) {
-          this.latLng = { 'lat': 28.300, 'lng': -16.500 };
-          this.map = L.map('map').setView([this.latLng.lat, this.latLng.lng], 10);
-          this.renderMap();
-        }
-        else {
-          this.latLng = { 'lat': latLng.lat, 'lng': latLng.lng };
-          this.map.remove();
-          this.map = L.map('map').setView([this.latLng.lat, this.latLng.lng], 10);
-          this.renderMap();
-        }
-      })
-      .catch((error) => console.log(error));
+  public initMap(latLng?: L.LatLngLiteral, swapApi: boolean = false) {
+
+    if (swapApi == true) this.map.remove();
+
+    if (latLng === undefined) {
+      this.latLng = { 'lat': 28.300, 'lng': -16.500 };
+      this.map = L.map('map');
+      this.map.setView([this.latLng.lat, this.latLng.lng], 10);
+      this.renderMap();
+    } else {
+      this.latLng = { 'lat': latLng.lat, 'lng': latLng.lng };
+      this.map.remove();
+      this.map = L.map('map');
+      this.map.setView([this.latLng.lat, this.latLng.lng], 10);
+      this.renderMap();
+    }
   }
 
   // renderMap añade los mapas tile
@@ -71,28 +74,40 @@ export class MapComponent implements AfterViewInit {
 
   public addStuffToMap(currentPage = 1) {
 
-    this.markers.forEach((marker: L.Marker) => {
-      this.map.removeLayer(marker);
-    });
+    if (this.markers.length > 0) {
+      this.markers.forEach((marker: L.Marker) => {
+        this.map.removeLayer(marker);
+      });
+    }
 
-    let filterByArea = this.filterByArea(this.data);
-    let dataPaginated = this.pagination(currentPage, filterByArea);
+    this.callApiComponent.getApiEndPoints()
+      .then((response) => {
+        this.data = response.data;
 
-    this.markers = [];
+        if (this.data.length > 0) {
+          let filterByArea = this.filterByArea(this.data);
+          let dataPaginated = this.pagination(currentPage, filterByArea);
 
-    dataPaginated.forEach((element: MarkerElement) => {
-      const marker = L.marker([element.lat, element.lng]).addTo(this.map);
-      this.markers.push(marker);
-      marker.on('mouseover', (e) => this.showPopup(e.latlng));
-    });
+          this.markers = [];
+
+          dataPaginated.forEach((element: MarkerElement) => {
+            const marker = L.marker([element.lat, element.lng]).addTo(this.map);
+            this.markers.push(marker);
+            marker.on('mouseover', (e) => this.showPopup(e.latlng));
+          });
+
+          this.currentData = dataPaginated;
+        } else {
+          this.currentData = [];
+          this.pagination(1, []);
+        }
+      }).catch();
 
     this.map.on('click', (event: any) => {
       this.latLng = event.latlng;
       this.addAddEndPointNode.nativeElement.style.display = "block";
       this.map.closePopup();
     });
-
-    this.currentData = dataPaginated;
   }
 
   // addEndPoint se encarga de hacer el post para guardar el nuevo endpoint pasando a json el objecto
@@ -159,13 +174,21 @@ export class MapComponent implements AfterViewInit {
     let area = this.map.getBounds();
     let filterItems: Array<MarkerElement> = [];
 
-    data.forEach((element: MarkerElement) => {
-      if (element.lat < area.getSouthWest().lat || element.lat > area.getNorthEast().lat || element.lng < area.getSouthWest().lng || element.lng > area.getNorthEast().lng) {
-      } else {
-        filterItems.push(element);
-      }
-    });
+    if (data.length > 0) {
+      data.forEach((element: MarkerElement) => {
+        if (element.lat < area.getSouthWest().lat || element.lat > area.getNorthEast().lat || element.lng < area.getSouthWest().lng || element.lng > area.getNorthEast().lng) {
+        } else {
+          filterItems.push(element);
+        }
+      });
+    }
     return filterItems;
+  }
+
+  changeApi(event: any) {
+    if (event.target.value == 'true') this.callApiComponent.isAgrestaApi = true;
+    else this.callApiComponent.isAgrestaApi = false;
+    this.initMap(undefined, true);
   }
 
   ngAfterViewInit(): void {

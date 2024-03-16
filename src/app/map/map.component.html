@@ -1,4 +1,11 @@
 <div class="mainContainer">
+    <div class="selectedApi">
+        <label for="selectedApi" class="">Seleccionar Api</label>
+        <select (change)="changeApi($event)" name="selectedApi" id="" class="">
+            <option value="{{ true }}" class="">agrestaApi</option>
+            <option value="{{ false }}" class="">myApi</option>
+        </select>
+    </div>
     <div class="mapContainer">
         <div class="searchResetContainer">
             <app-search></app-search>

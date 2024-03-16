@@ -16,8 +16,14 @@ import { environment } from '../../environments/environment.development';
 
 export class CallApiComponent {
 
+  public isAgrestaApi: boolean = true;
+  public api: string;
+
   getApiEndPoints() {
-    return axios.get(environment.apiUrl);
+    if (this.isAgrestaApi == true) this.api = environment.apiUrl;
+    else this.api = environment.myApiUrl + '/locations';
+
+    return axios.get(this.api);
   }
 
   postApiEndPoints(endPoint: any) {
