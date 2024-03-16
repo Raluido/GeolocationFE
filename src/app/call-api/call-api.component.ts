@@ -17,7 +17,7 @@ import { environment } from '../../environments/environment.development';
 export class CallApiComponent {
 
   public isAgrestaApi: boolean = true;
-  public api: string;
+  private api: string;
 
   getApiEndPoints() {
     if (this.isAgrestaApi == true) this.api = environment.apiUrl;
@@ -27,11 +27,10 @@ export class CallApiComponent {
   }
 
   postApiEndPoints(endPoint: any) {
-    return axios.post(environment.apiUrl, endPoint, {
-      headers: {
-        'Content-type': 'application/json'
-      }
-    });
+    if (this.isAgrestaApi == true) this.api = environment.apiUrl;
+    else this.api = environment.myApiUrl + '/locations';
+
+    return axios.post(this.api, endPoint);
   }
 
   getApiLatLng(search: string) {

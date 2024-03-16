@@ -31,6 +31,7 @@ export class MapComponent implements AfterViewInit {
   private markers: L.Marker[] = [];
   public currentData: Array<MarkerElement>;
   public totalPagesArr: Array<number>;
+  public swapApi: boolean = false;
 
   constructor(
     private callApiComponent: CallApiComponent
@@ -38,9 +39,9 @@ export class MapComponent implements AfterViewInit {
 
   // initMap se encarga de cargar la localización por defecto si no se indica una en la búsqueda
 
-  public initMap(latLng?: L.LatLngLiteral, swapApi: boolean = false) {
+  public initMap(latLng?: L.LatLngLiteral) {
 
-    if (swapApi == true) this.map.remove();
+    if (this.swapApi == true) this.map.remove();
 
     if (latLng === undefined) {
       this.latLng = { 'lat': 28.300, 'lng': -16.500 };
@@ -84,6 +85,8 @@ export class MapComponent implements AfterViewInit {
       .then((response) => {
         this.data = response.data;
 
+        console.log(this.data);
+
         if (this.data.length > 0) {
           let filterByArea = this.filterByArea(this.data);
           let dataPaginated = this.pagination(currentPage, filterByArea);
@@ -119,29 +122,48 @@ export class MapComponent implements AfterViewInit {
     let description = this.addDescriptionNode.nativeElement.value;
     let lat = this.latLng.lat;
     let lng = this.latLng.lng;
+    let endPoint: Object;
+    let endPointJson: string;
 
-    let endPoint = {
-      "report": {
+    if (this.swapApi == true) {
+      endPoint = {
+        "ccaa": 'default',
+        "province": 'default',
+        "city": 'default',
         "project": name,
         "description": description,
         "lat": lat,
         "lng": lng,
-        "saved_date": new Date()
-      }
-    };
+        "created_at": new Date()
+      };
+    } else {
+      endPoint = {
+        "report": {
+          "project": name,
+          "description": description,
+          "lat": lat,
+          "lng": lng,
+          "saved_date": new Date()
+        }
+      };
+    }
 
-    let endPointJson = JSON.stringify(endPoint);
-    this.callApiComponent.postApiEndPoints(endPointJson)
-      .then((response) => {
-        response.data;
-      })
-      .catch((error) => console.log(error))
-      .finally(() => this.closeAddEndPoint());
+    if (Object.keys(endPoint).length != 0) {
+      endPointJson = JSON.stringify(endPoint);
+      this.callApiComponent.postApiEndPoints(endPointJson)
+        .then((response) => {
+          response.data;
+        })
+        .catch((error) => console.log(error))
+        .finally(() => {
+          this.closeAddEndPoint();
+        });
+    }
   }
 
   public closeAddEndPoint() {
     this.addAddEndPointNode.nativeElement.style.display = "none";
-    this.initMap(this.latLng);
+    this.initMap();
   }
 
   public showPopup(listedIndex: L.LatLngExpression) {
@@ -186,9 +208,14 @@ export class MapComponent implements AfterViewInit {
   }
 
   changeApi(event: any) {
-    if (event.target.value == 'true') this.callApiComponent.isAgrestaApi = true;
-    else this.callApiComponent.isAgrestaApi = false;
-    this.initMap(undefined, true);
+    if (event.target.value == 'true') {
+      this.swapApi = false;
+      this.callApiComponent.isAgrestaApi = true;
+    } else {
+      this.swapApi = true;
+      this.callApiComponent.isAgrestaApi = false;
+    }
+    this.initMap();
   }
 
   ngAfterViewInit(): void {
