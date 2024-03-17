@@ -14,10 +14,6 @@ import { PaginationComponent } from '../pagination/pagination.component';
   styleUrl: './map.component.css'
 })
 
-@Injectable({
-  providedIn: 'root'
-})
-
 export class MapComponent implements AfterViewInit {
 
   @ViewChild('addAddEndPointNode') addAddEndPointNode!: ElementRef;
@@ -40,8 +36,6 @@ export class MapComponent implements AfterViewInit {
   // initMap se encarga de cargar la localización por defecto si no se indica una en la búsqueda
 
   public initMap(latLng?: L.LatLngLiteral) {
-
-    if (this.swapApi == true) this.map.remove();
 
     if (latLng === undefined) {
       this.latLng = { 'lat': 28.300, 'lng': -16.500 };
@@ -68,8 +62,9 @@ export class MapComponent implements AfterViewInit {
   }
 
   // addStuffToMap recibe por defecto la pagina 1. Borra las capas por si hay busquedas o imagenes nuevas
+  // se llama a la api para obtener los endpoints
   // se filtran areas y paginas con el resultado de las primeras
-  // cargo las marcas nuevas que correspondan a ese lugar y pagina y añado popus con mouseover
+  // cargo las marcas nuevas que correspondan a ese lugar y pagina y añado popups con mouseover
   // con onclick despliego la ventana para añadir una marca
   // añado las marcas filtradas y paginadas al listado
 
@@ -84,8 +79,6 @@ export class MapComponent implements AfterViewInit {
     this.callApiComponent.getApiEndPoints()
       .then((response) => {
         this.data = response.data;
-
-        console.log(this.data);
 
         if (this.data.length > 0) {
           let filterByArea = this.filterByArea(this.data);
@@ -156,14 +149,13 @@ export class MapComponent implements AfterViewInit {
         })
         .catch((error) => console.log(error))
         .finally(() => {
-          this.closeAddEndPoint();
+          this.initMap(this.latLng);
         });
     }
   }
 
   public closeAddEndPoint() {
     this.addAddEndPointNode.nativeElement.style.display = "none";
-    this.initMap();
   }
 
   public showPopup(listedIndex: L.LatLngExpression) {
@@ -175,12 +167,13 @@ export class MapComponent implements AfterViewInit {
 
   private pagination(page: number, items: Array<MarkerElement>) {
     let itemsPerPage = 10;
-    let totalPages = Math.floor(items.length / itemsPerPage) + 1;
+    let totalPages = items.length / itemsPerPage;
+    let noDec = Math.floor(totalPages);
+    if (totalPages != noDec) noDec += 1;
     let startIndex = (page - 1) * itemsPerPage;
     let endIndex = startIndex + itemsPerPage;
     let pageItems: Array<MarkerElement> = items.slice(startIndex, endIndex);
-
-    let totalPagesArr = new Array(totalPages);
+    let totalPagesArr = new Array(noDec);
     for (let index = 0; index < totalPagesArr.length; index++) {
       totalPagesArr[index] = index + 1;
     }
@@ -215,6 +208,7 @@ export class MapComponent implements AfterViewInit {
       this.swapApi = true;
       this.callApiComponent.isAgrestaApi = false;
     }
+    this.map.remove();
     this.initMap();
   }
 
