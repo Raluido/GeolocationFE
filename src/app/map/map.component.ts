@@ -149,6 +149,7 @@ export class MapComponent implements AfterViewInit {
         })
         .catch((error) => console.log(error))
         .finally(() => {
+          this.addAddEndPointNode.nativeElement.style.display = "none";
           this.initMap(this.latLng);
         });
     }
