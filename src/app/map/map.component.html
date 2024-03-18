@@ -17,8 +17,11 @@
         </div>
         <div class="endPoints">
             <h3 class="">Listado de localizaciones</h3>
-            <app-list-markers [data]="currentData">
-            </app-list-markers>
+            <div class="" *ngIf="currentData?.length; else elseBlock">
+                <app-list-markers [data]="currentData">
+                </app-list-markers>
+            </div>
+            <ng-template #elseBlock="">No hay registros en ésta área del mapa.</ng-template>
             <div class="addEndPoint" #addAddEndPointNode>
                 <div class="innerAddEndPoint">
                     <h3 class="">Crear nuevo marcador</h3>

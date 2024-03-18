@@ -5,11 +5,12 @@ import { MarkerElement } from '../marker-element';
 import { ListMarkersComponent } from '../list-markers/list-markers.component';
 import { SearchComponent } from '../search/search.component';
 import { PaginationComponent } from '../pagination/pagination.component';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [CallApiComponent, ListMarkersComponent, SearchComponent, PaginationComponent],
+  imports: [CallApiComponent, ListMarkersComponent, SearchComponent, PaginationComponent, NgIf],
   templateUrl: './map.component.html',
   styleUrl: './map.component.css'
 })
