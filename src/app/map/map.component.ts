@@ -28,6 +28,7 @@ export class MapComponent implements AfterViewInit {
   private markers: L.Marker[] = [];
   public currentData: Array<MarkerElement>;
   public totalPagesArr: Array<number>;
+  public pageSelected: number;
   public swapApi: boolean = false;
 
   constructor(
@@ -69,7 +70,7 @@ export class MapComponent implements AfterViewInit {
   // con onclick despliego la ventana para añadir una marca
   // añado las marcas filtradas y paginadas al listado
 
-  public addStuffToMap(currentPage = 1) {
+  public addStuffToMap(currentPage: number = 1) {
 
     if (this.markers.length > 0) {
       this.markers.forEach((marker: L.Marker) => {
@@ -170,17 +171,29 @@ export class MapComponent implements AfterViewInit {
   private pagination(page: number, items: Array<MarkerElement>) {
     let itemsPerPage = 10;
     let totalPages = items.length / itemsPerPage;
-    let noDec = Math.floor(totalPages);
-    if (totalPages != noDec) noDec += 1;
+    let totalPagesRoundedd = Math.floor(totalPages);
+    if (totalPages != totalPagesRoundedd) totalPagesRoundedd += 1;
     let startIndex = (page - 1) * itemsPerPage;
     let endIndex = startIndex + itemsPerPage;
     let pageItems: Array<MarkerElement> = items.slice(startIndex, endIndex);
-    let totalPagesArr = new Array(noDec);
-    for (let index = 0; index < totalPagesArr.length; index++) {
-      totalPagesArr[index] = index + 1;
+    let temp: Array<number> = [];
+
+    if (typeof (page) == 'string') page = parseInt(page);
+
+    if (totalPagesRoundedd < 4) {
+      for (let index = 1; index <= totalPagesRoundedd; index++) {
+        temp[index] = index;
+      }
+    } else {
+      if (page = totalPagesRoundedd) {
+        temp = [page - 2, page - 1, page];
+      } else if (page < totalPagesRoundedd) {
+        temp = [page - 1, page, page + 1];
+      }
     }
 
-    this.totalPagesArr = totalPagesArr;
+    this.totalPagesArr = temp;
+    this.pageSelected = page;
 
     return pageItems;
   }
