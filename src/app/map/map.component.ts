@@ -1,5 +1,8 @@
 import { Component, AfterViewInit, ViewChild, ElementRef, Injectable } from '@angular/core';
 import * as L from 'leaflet';
+import "leaflet/dist/leaflet.css";
+import "@geoman-io/leaflet-geoman-free";
+import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import { CallApiComponent } from '../call-api/call-api.component';
 import { MarkerElement } from '../marker-element';
 import { ListMarkersComponent } from '../list-markers/list-markers.component';
@@ -41,13 +44,13 @@ export class MapComponent implements AfterViewInit {
 
     if (latLng === undefined) {
       this.latLng = { 'lat': 28.300, 'lng': -16.500 };
-      this.map = L.map('map');
+      this.map = L.map('map', { pmIgnore: false });
       this.map.setView([this.latLng.lat, this.latLng.lng], 10);
       this.renderMap();
     } else {
       this.latLng = { 'lat': latLng.lat, 'lng': latLng.lng };
       this.map.remove();
-      this.map = L.map('map');
+      this.map = L.map('map', { pmIgnore: false });
       this.map.setView([this.latLng.lat, this.latLng.lng], 10);
       this.renderMap();
     }
@@ -71,6 +74,8 @@ export class MapComponent implements AfterViewInit {
   // añado las marcas filtradas y paginadas al listado
 
   public addStuffToMap(currentPage: number = 1) {
+
+    if (this.swapApi == true) this.addControls();  // adcontrols just to my api testing
 
     if (this.markers.length > 0) {
       this.markers.forEach((marker: L.Marker) => {
@@ -102,9 +107,18 @@ export class MapComponent implements AfterViewInit {
       }).catch();
 
     this.map.on('click', (event: any) => {
+      console.log(event);
       this.latLng = event.latlng;
       this.addAddEndPointNode.nativeElement.style.display = "block";
       this.map.closePopup();
+    });
+  }
+
+  public addControls() {
+    this.map.pm.addControls({
+      position: 'topleft',
+      drawCircleMarker: false,
+      rotateMode: false,
     });
   }
 
