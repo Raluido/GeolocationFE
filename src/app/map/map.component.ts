@@ -9,6 +9,7 @@ import { ListMarkersComponent } from '../list-markers/list-markers.component';
 import { SearchComponent } from '../search/search.component';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { NgIf } from '@angular/common';
+import { GeometryCollection } from 'geojson';
 
 @Component({
   selector: 'app-map',
@@ -25,10 +26,9 @@ export class MapComponent implements AfterViewInit {
   @ViewChild('addDescriptionNode') addDescriptionNode!: ElementRef;
 
   private map: L.Map;
-  private data: Array<MarkerElement>;
-  // private popup = L.popup();
+  private data: JSON;
   private latLng: L.LatLngLiteral;
-  private markers: L.Marker[] = [];
+  public layerGroup: L.LayerGroup;
   public currentData: Array<MarkerElement>;
   public totalPagesArr: Array<number>;
   public pageSelected: number;
@@ -46,9 +46,7 @@ export class MapComponent implements AfterViewInit {
       this.renderMap();
     } else {
       this.latLng = { 'lat': latLng.lat, 'lng': latLng.lng };
-      this.map.remove();
-      this.map = L.map('map');
-      this.map.setView([this.latLng.lat, this.latLng.lng], 10);
+      this.map.panTo([this.latLng.lat, this.latLng.lng]);
       this.renderMap();
     }
   }
@@ -61,64 +59,42 @@ export class MapComponent implements AfterViewInit {
 
   public addStuffToMap(currentPage: number = 1) {
 
-    this.addControls();
+    this.map.pm.addControls();
 
-    if (this.markers.length > 0) {
-      this.markers.forEach((marker: L.Marker) => {
-        this.map.removeLayer(marker);
-      });
-    }
+    this.layerGroup.clearLayers();
 
     this.callApiComponent.getApiEndPoints()
       .then((response) => {
         this.data = response.data;
 
-        if (this.data.length > 0) {
+        if (this.data.parse.length > 0) {
           let filterByArea = this.filterByArea(this.data);
           let dataPaginated = this.pagination(currentPage, filterByArea);
-
-          this.markers = [];
-
           dataPaginated.forEach((element: MarkerElement) => {
-            const marker = L.marker([element.lat, element.lng]).addTo(this.map);
+            const marker = L.marker([element.lat, element.lng]).addTo(this.layerGroup);
             this.markers.push(marker);
-            // marker.on('mouseover', (e) => this.showPopup(e.latlng));
           });
+
+          let layerGroup = new L.LayerGroup(this.markers);
 
           this.currentData = dataPaginated;
         } else {
           this.currentData = [];
           this.pagination(1, []);
         }
+
       }).catch();
-
-
-    function makePopupContent(feature) {
-      return `
-          ${feature.geometry.coordinates}   
-        `;
-    }
-
-    function setPopup(layer: L.Layer) {
-      let feature = layer.toGeoJSON();
-      let coords = makePopupContent(feature);
-      layer.bindPopup(coords);
-    }
-
-    this.map.on('pm:create', function (e) {
-      let layer = e.layer;
-      setPopup(layer);
-      layer.on('pm:update', function (e) {
-        setPopup(e.layer);
-      });
-    });
-
-    // this.map.on('click', (event: any) => {
-    //   this.latLng = event.latlng;
-    //   this.addAddEndPointNode.nativeElement.style.display = "block";
-    //   this.map.closePopup();
-    // });
   }
+
+  public setPopup(layer: L.LayerGroup) {
+    let feature = layer.toGeoJSON();
+    console.log(feature);
+  };
+
+  // this.map.on('pm:create', function (e) {
+  //     let layerGroup = new L.LayerGroup([e.layer]);
+  //     setPopup(layerGroup);
+  //   });
 
   public addControls() {
     this.map.pm.addControls({
@@ -127,6 +103,7 @@ export class MapComponent implements AfterViewInit {
       rotateMode: false,
     });
   }
+
 
   public addEndPoint() {
 
@@ -166,13 +143,6 @@ export class MapComponent implements AfterViewInit {
     this.addAddEndPointNode.nativeElement.style.display = "none";
   }
 
-  // public showPopup(listedIndex: L.LatLngExpression) {
-  //   this.popup
-  //     .setLatLng(listedIndex)
-  //     .setContent(listedIndex.toString())
-  //     .openOn(this.map);
-  // }
-
   private pagination(page: number, items: Array<MarkerElement>) {
     let itemsPerPage = 10;
     let totalPages = items.length / itemsPerPage;
@@ -203,27 +173,27 @@ export class MapComponent implements AfterViewInit {
     return pageItems;
   }
 
-  // se filtran los puntos que no entren en el mapa
-
-  private filterByArea(data: Array<MarkerElement>) {
+  private filterByArea(data: JSON) {
     let area = this.map.getBounds();
-    let filterItems: Array<MarkerElement> = [];
+    let filterLayers = Array();
+    let filterGroup: L.LayerGroup;
 
-    if (data.length > 0) {
-      data.forEach((element: MarkerElement) => {
-        if (element.lat < area.getSouthWest().lat || element.lat > area.getNorthEast().lat || element.lng < area.getSouthWest().lng || element.lng > area.getNorthEast().lng) {
-        } else {
-          filterItems.push(element);
-        }
-      });
+    for (let index in data) {
+      if (Object(index).lat < area.getSouthWest().lat || Object(index).lat > area.getNorthEast().lat || Object(index).lng < area.getSouthWest().lng || Object(index).lng > area.getNorthEast().lng) {
+      } else {
+        filterLayers.push(Object(index));
+      }
     }
-    return filterItems;
+
+    filterGroup.addLayer(filterLayers);
+
+
+    return filterGroup;
   }
 
   ngAfterViewInit(): void {
     this.initMap();
   }
-
 }
 
 
