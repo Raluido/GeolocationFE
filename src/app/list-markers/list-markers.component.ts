@@ -23,7 +23,7 @@ import { MarkerElement } from '../marker-element';
             </thead>
             <tbody class="">
               @for(index of data; track index.lat; let i = $index) {
-                <tr class="" (click)="showPopup(i)">
+                <tr class="">
                   <td class="">{{index.ccaa}}</td>
                   <td class="">{{index.province}}</td>
                   <td class="">{{index.city}}</td>
@@ -45,9 +45,9 @@ export class ListMarkersComponent {
 
   @Input() data: Array<MarkerElement>;
 
-  showPopup(index: number) {
-    const latLngObj: LatLng = new LatLng(this.data[index].lat, this.data[index].lng);
-    this.mapComponent.showPopup(latLngObj);
-  }
+  // showPopup(index: number) {
+  //   const latLngObj: LatLng = new LatLng(this.data[index].lat, this.data[index].lng);
+  //   this.mapComponent.showPopup(latLngObj);
+  // }
 }
 

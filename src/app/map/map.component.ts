@@ -26,7 +26,7 @@ export class MapComponent implements AfterViewInit {
 
   private map: L.Map;
   private data: Array<MarkerElement>;
-  private popup = L.popup();
+  // private popup = L.popup();
   private latLng: L.LatLngLiteral;
   private markers: L.Marker[] = [];
   public currentData: Array<MarkerElement>;
@@ -37,44 +37,31 @@ export class MapComponent implements AfterViewInit {
     private callApiComponent: CallApiComponent
   ) { }
 
-  // initMap se encarga de cargar la localización por defecto si no se indica una en la búsqueda
-
   public initMap(latLng?: L.LatLngLiteral) {
 
     if (latLng === undefined) {
       this.latLng = { 'lat': 28.300, 'lng': -16.500 };
-      this.map = L.map('map', { pmIgnore: false });
+      this.map = L.map('map');
       this.map.setView([this.latLng.lat, this.latLng.lng], 10);
       this.renderMap();
     } else {
       this.latLng = { 'lat': latLng.lat, 'lng': latLng.lng };
       this.map.remove();
-      this.map = L.map('map', { pmIgnore: false });
+      this.map = L.map('map');
       this.map.setView([this.latLng.lat, this.latLng.lng], 10);
       this.renderMap();
     }
   }
 
-  // renderMap añade los mapas tile
-
   private renderMap() {
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(this.map);
+    let layer = new L.TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png');
+    this.map.addLayer(layer);
     this.addStuffToMap();
   }
 
-  // addStuffToMap recibe por defecto la pagina 1. Borra las capas por si hay busquedas o imagenes nuevas
-  // se llama a la api para obtener los endpoints
-  // se filtran areas y paginas con el resultado de las primeras
-  // cargo las marcas nuevas que correspondan a ese lugar y pagina y añado popups con mouseover
-  // con onclick despliego la ventana para añadir una marca
-  // añado las marcas filtradas y paginadas al listado
-
   public addStuffToMap(currentPage: number = 1) {
 
-    this.addControls();  // adcontrols just to my api testing
+    this.addControls();
 
     if (this.markers.length > 0) {
       this.markers.forEach((marker: L.Marker) => {
@@ -95,7 +82,7 @@ export class MapComponent implements AfterViewInit {
           dataPaginated.forEach((element: MarkerElement) => {
             const marker = L.marker([element.lat, element.lng]).addTo(this.map);
             this.markers.push(marker);
-            marker.on('mouseover', (e) => this.showPopup(e.latlng));
+            // marker.on('mouseover', (e) => this.showPopup(e.latlng));
           });
 
           this.currentData = dataPaginated;
@@ -105,11 +92,32 @@ export class MapComponent implements AfterViewInit {
         }
       }).catch();
 
-    this.map.on('click', (event: any) => {
-      this.latLng = event.latlng;
-      this.addAddEndPointNode.nativeElement.style.display = "block";
-      this.map.closePopup();
+
+    function makePopupContent(feature) {
+      return `
+          ${feature.geometry.coordinates}   
+        `;
+    }
+
+    function setPopup(layer: L.Layer) {
+      let feature = layer.toGeoJSON();
+      let coords = makePopupContent(feature);
+      layer.bindPopup(coords);
+    }
+
+    this.map.on('pm:create', function (e) {
+      let layer = e.layer;
+      setPopup(layer);
+      layer.on('pm:update', function (e) {
+        setPopup(e.layer);
+      });
     });
+
+    // this.map.on('click', (event: any) => {
+    //   this.latLng = event.latlng;
+    //   this.addAddEndPointNode.nativeElement.style.display = "block";
+    //   this.map.closePopup();
+    // });
   }
 
   public addControls() {
@@ -119,9 +127,6 @@ export class MapComponent implements AfterViewInit {
       rotateMode: false,
     });
   }
-
-  // addEndPoint se encarga de hacer el post para guardar el nuevo endpoint pasando a json el objecto
-  // finalmente se cierra el cuadro y se recarga la base con el init
 
   public addEndPoint() {
 
@@ -161,12 +166,12 @@ export class MapComponent implements AfterViewInit {
     this.addAddEndPointNode.nativeElement.style.display = "none";
   }
 
-  public showPopup(listedIndex: L.LatLngExpression) {
-    this.popup
-      .setLatLng(listedIndex)
-      .setContent(listedIndex.toString())
-      .openOn(this.map);
-  }
+  // public showPopup(listedIndex: L.LatLngExpression) {
+  //   this.popup
+  //     .setLatLng(listedIndex)
+  //     .setContent(listedIndex.toString())
+  //     .openOn(this.map);
+  // }
 
   private pagination(page: number, items: Array<MarkerElement>) {
     let itemsPerPage = 10;
