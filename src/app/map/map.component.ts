@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ViewChild, ElementRef, Injectable } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import * as L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 import "@geoman-io/leaflet-geoman-free";
@@ -32,7 +32,6 @@ export class MapComponent implements AfterViewInit {
   public currentData: Array<MarkerElement>;
   public totalPagesArr: Array<number>;
   public pageSelected: number;
-  public swapApi: boolean = false;
 
   constructor(
     private callApiComponent: CallApiComponent
@@ -75,7 +74,7 @@ export class MapComponent implements AfterViewInit {
 
   public addStuffToMap(currentPage: number = 1) {
 
-    if (this.swapApi == true) this.addControls();  // adcontrols just to my api testing
+    this.addControls();  // adcontrols just to my api testing
 
     if (this.markers.length > 0) {
       this.markers.forEach((marker: L.Marker) => {
@@ -107,7 +106,6 @@ export class MapComponent implements AfterViewInit {
       }).catch();
 
     this.map.on('click', (event: any) => {
-      console.log(event);
       this.latLng = event.latlng;
       this.addAddEndPointNode.nativeElement.style.display = "block";
       this.map.closePopup();
@@ -134,28 +132,16 @@ export class MapComponent implements AfterViewInit {
     let endPoint: Object;
     let endPointJson: string;
 
-    if (this.swapApi == true) {
-      endPoint = {
-        "ccaa": 'default',
-        "province": 'default',
-        "city": 'default',
-        "project": name,
-        "description": description,
-        "lat": lat,
-        "lng": lng,
-        "created_at": new Date()
-      };
-    } else {
-      endPoint = {
-        "report": {
-          "project": name,
-          "description": description,
-          "lat": lat,
-          "lng": lng,
-          "saved_date": new Date()
-        }
-      };
-    }
+    endPoint = {
+      "ccaa": 'default',
+      "province": 'default',
+      "city": 'default',
+      "project": name,
+      "description": description,
+      "lat": lat,
+      "lng": lng,
+      "created_at": new Date()
+    };
 
     if (Object.keys(endPoint).length != 0) {
       endPointJson = JSON.stringify(endPoint);
@@ -227,18 +213,6 @@ export class MapComponent implements AfterViewInit {
       });
     }
     return filterItems;
-  }
-
-  changeApi(event: any) {
-    if (event.target.value == 'true') {
-      this.swapApi = false;
-      this.callApiComponent.isAgrestaApi = true;
-    } else {
-      this.swapApi = true;
-      this.callApiComponent.isAgrestaApi = false;
-    }
-    this.map.remove();
-    this.initMap();
   }
 
   ngAfterViewInit(): void {

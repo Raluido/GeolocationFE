@@ -3,20 +3,6 @@
     justify-content: space-evenly;
 }
 
-.selectedApi {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    border-bottom: 1px solid lightblue;
-    border-top: 1px solid lightblue;
-    padding: 1em 0;
-    margin: 2em 0 2em 0;
-}
-
-.selectedApi label {
-    margin-right: 2em;
-}
-
 #map {
     width: 100%;
     height: 70vh;

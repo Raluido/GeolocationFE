@@ -16,21 +16,13 @@ import { environment } from '../../environments/environment.development';
 
 export class CallApiComponent {
 
-  public isAgrestaApi: boolean = true;
-  private api: string;
 
   getApiEndPoints() {
-    if (this.isAgrestaApi == true) this.api = environment.apiUrl;
-    else this.api = environment.myApiUrl + '/locations';
-
-    return axios.get(this.api);
+    return axios.get(environment.myApiUrl + '/locations');
   }
 
   postApiEndPoints(endPoint: any) {
-    if (this.isAgrestaApi == true) this.api = environment.apiUrl;
-    else this.api = environment.myApiUrl + '/locations';
-
-    return axios.post(this.api, endPoint);
+    return axios.post(environment.myApiUrl + '/locations', endPoint);
   }
 
   getApiLatLng(search: string) {
