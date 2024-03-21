@@ -85,6 +85,7 @@ export class MapComponent implements AfterViewInit {
     this.map.on('pm:create', function (e) {
       let newLayer = new L.LayerGroup([e.layer]);
       let geoJson = newLayer.toGeoJSON();
+      (new CallApiComponent).postApiEndPoints(geoJson);
 
     });
   }
