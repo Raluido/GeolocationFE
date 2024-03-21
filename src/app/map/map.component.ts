@@ -1,16 +1,11 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import * as L from 'leaflet';
-import "leaflet/dist/leaflet.css";
-import "@geoman-io/leaflet-geoman-free";
-import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import { CallApiComponent } from '../call-api/call-api.component';
 import { MarkerElement } from '../marker-element';
 import { ListMarkersComponent } from '../list-markers/list-markers.component';
 import { SearchComponent } from '../search/search.component';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { NgIf } from '@angular/common';
-import { GeometryCollection } from 'geojson';
-import ogr2ogr from 'ogr2ogr';
 
 @Component({
   selector: 'app-map',
@@ -61,8 +56,6 @@ export class MapComponent implements AfterViewInit {
 
   public addStuffToMap(currentPage: number = 1) {
 
-    this.map.pm.addControls();
-
     if (this.layerGroup != undefined) this.layerGroup.clearLayers();
 
     this.callApiComponent.getApiEndPoints()
@@ -82,20 +75,6 @@ export class MapComponent implements AfterViewInit {
 
       }).catch();
 
-    this.map.on('pm:create', function (e) {
-      let newLayer = new L.LayerGroup([e.layer]);
-      let geoJson = newLayer.toGeoJSON();
-      (new CallApiComponent).postApiEndPoints(geoJson);
-
-    });
-  }
-
-  public addControls() {
-    this.map.pm.addControls({
-      position: 'topleft',
-      drawCircleMarker: false,
-      rotateMode: false,
-    });
   }
 
   public addEndPoint() {
