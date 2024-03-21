@@ -10,8 +10,8 @@
         </div>
         <div class="endPoints">
             <h3 class="">Listado de localizaciones</h3>
-            <div class="" *ngIf="currentData?.length; else elseBlock">
-                <app-list-markers [data]="currentData">
+            <div class="" *ngIf="layers?.length; else elseBlock">
+                <app-list-markers [data]="layers">
                 </app-list-markers>
             </div>
             <ng-template #elseBlock="">No hay registros en ésta área del mapa.</ng-template>

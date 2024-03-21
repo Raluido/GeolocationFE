@@ -22,15 +22,15 @@ import { MarkerElement } from '../marker-element';
                 </tr>
             </thead>
             <tbody class="">
-              @for(index of data; track index.lat; let i = $index) {
+              @for(index of data; track index.options.attribution?.indexOf; let i = $index) {
                 <tr class="">
-                  <td class="">{{index.ccaa}}</td>
-                  <td class="">{{index.province}}</td>
+                  <td class="">{{index}}</td>
+                  <!-- <td class="">{{index.province}}</td>
                   <td class="">{{index.city}}</td>
                   <td class="">{{index.project}}</td>
                   <td class="">{{index.description}}</td>
                   <td class="">{{index.lat}}</td>
-                  <td class="">{{index.lng}}</td>
+                  <td class="">{{index.lng}}</td> -->
                 </tr>
                 }
             </tbody>
@@ -43,7 +43,7 @@ export class ListMarkersComponent {
 
   constructor(private mapComponent: MapComponent) { }
 
-  @Input() data: Array<MarkerElement>;
+  @Input() data: L.Layer[];
 
   // showPopup(index: number) {
   //   const latLngObj: LatLng = new LatLng(this.data[index].lat, this.data[index].lng);
