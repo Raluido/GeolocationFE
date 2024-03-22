@@ -1,11 +1,17 @@
 <div class="mainContainer">
     <div class="mapAndEnd">
         <div class="mapContainer">
-            <div class="searchResetContainer">
+            <!-- <div class="searchResetContainer">
                 <app-search></app-search>
                 <button id="updateBtn" (click)="addStuffToMap()">Actualizar</button>
             </div>
             <div id="map">
+            </div> -->
+            <div style="height: 300px;" leaflet leafletDraw [leafletDrawOptions]="drawOptions"
+                [leafletOptions]="options" [leafletLayersControl]="layersControl"
+                (leafletDrawCreated)="onDrawCreated($event)" style="height: 400px;">
+                <div *ngIf="showLayer" [leafletLayer]="layer"></div>
+                <div appDraw></div>
             </div>
         </div>
         <div class="endPoints">
@@ -22,8 +28,8 @@
                     <input type="text" placeholder="Nombre" id="name" class="" #addNameNode>
                     <label for="description" class="">Descripción</label>
                     <input type="text" placeholder="Descripción" id="description" class="" #addDescriptionNode>
-                    <button (click)="addEndPoint()">Añadir</button>
-                    <button (click)="closeAddEndPoint()">Cancelar</button>
+                    <!-- <button (click)="addEndPoint()">Añadir</button>
+                    <button (click)="closeAddEndPoint()">Cancelar</button> -->
                 </div>
             </div>
         </div>
