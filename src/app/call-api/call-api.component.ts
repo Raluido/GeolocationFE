@@ -22,7 +22,12 @@ export class CallApiComponent {
   }
 
   postApiEndPoints(endPoint: any) {
-    return axios.post(environment.myApiUrl + '/locations', endPoint);
+    return axios.post(environment.myApiUrl + '/locations', endPoint, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    })
   }
 
   getApiLatLng(search: string) {
