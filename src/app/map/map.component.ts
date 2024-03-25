@@ -113,7 +113,7 @@ export class MapComponent implements OnInit {
     this.drawnItems.addLayer((event as L.DrawEvents.Created).layer);
     let geoJson = L.featureGroup([layer]).toGeoJSON();
     this.callApiComponent.postApiEndPoints(geoJson).subscribe((data: any) => {
-      this.response = data;
+      this.response.push(data);
     })
   }
 
