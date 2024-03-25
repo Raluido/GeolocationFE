@@ -37,6 +37,7 @@ export class MapComponent implements OnInit {
   public layerGroup: L.LayerGroup;
   public totalPagesArr: Array<number>;
   public pageSelected: number;
+  public response: any;
 
   constructor(
     private callApiComponent: CallApiComponent,
@@ -111,11 +112,9 @@ export class MapComponent implements OnInit {
     layer.feature.properties.description = 'testing description';
     this.drawnItems.addLayer((event as L.DrawEvents.Created).layer);
     let geoJson = L.featureGroup([layer]).toGeoJSON();
-    this.callApiComponent.postApiEndPoints(geoJson)
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => console.log(error));
+    this.callApiComponent.postApiEndPoints(geoJson).subscribe((data: any) => {
+      this.response = data;
+    })
   }
 
   ngOnInit(): void {

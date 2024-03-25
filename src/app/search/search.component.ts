@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { MapComponent } from '../map/map.component';
 import { CallApiComponent } from '../call-api/call-api.component';
 import { Feature } from '../marker-element';
+import { subscribeOn } from 'rxjs';
 
 @Component({
   selector: 'app-search',
@@ -23,19 +24,17 @@ import { Feature } from '../marker-element';
 export class SearchComponent {
 
   public results: Array<Feature>;
+  public search: any[];
 
   @ViewChild('resultsNode') resultsNode!: ElementRef;
 
   constructor(private callApiComponent: CallApiComponent, private mapComponent: MapComponent) { }
 
   getSearch(event: any) {
-    const promise = this.callApiComponent.getApiLatLng(event.target.value);
-    promise
-      .then((response) => {
-        this.results = response.data.features;
-        this.resultsNode.nativeElement.style.display = "block";
-      })
-      .catch(error => console.log(error));
+    this.callApiComponent.getApiLatLng(event.target.value).subscribe((data: any) => {
+      this.results = data.features;
+      this.resultsNode.nativeElement.style.display = "block";
+    });
   };
 
   goToSearch(index: Feature) {

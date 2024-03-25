@@ -1,5 +1,6 @@
 import { Component, Injectable } from '@angular/core';
-import axios from 'axios';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 
 @Component({
@@ -16,25 +17,20 @@ import { environment } from '../../environments/environment.development';
 
 export class CallApiComponent {
 
+  constructor(private http: HttpClient) { }
 
-  getApiEndPoints() {
-    return axios.get(environment.myApiUrl + '/locations');
+
+  getApiEndPoints(): Observable<any[]> {
+    return this.http.get<any>(environment.myApiUrl + '/locations');
   }
 
-  postApiEndPoints(endPoint: any) {
-    return axios.post(environment.myApiUrl + '/locations', endPoint, {
-      headers: {
-        'Accept': "application/json",
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Content-Length': 3495,
-      }
-    })
+  postApiEndPoints(endPoint: any): Observable<any> {
+    return this.http.post<any>(environment.myApiUrl + '/locations', endPoint)
   }
 
-  getApiLatLng(search: string) {
+  getApiLatLng(search: string): Observable<any[]> {
     search.replace(' ', '%');
-    return axios.get(environment.apiUrlGeol + search + '&apiKey=' + environment.apiKey);
+    return this.http.get<any[]>(environment.apiUrlGeol + search + '&apiKey=' + environment.apiKey);
   }
 }
 
