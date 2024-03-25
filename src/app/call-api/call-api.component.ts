@@ -24,8 +24,10 @@ export class CallApiComponent {
   postApiEndPoints(endPoint: any) {
     return axios.post(environment.myApiUrl + '/locations', endPoint, {
       headers: {
+        'Accept': "application/json",
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*',
+        'Content-Length': 3495,
       }
     })
   }

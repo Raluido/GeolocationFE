@@ -104,10 +104,9 @@ export class MapComponent implements OnInit {
   public onDrawCreated(event: any) {
     let layer = event.layer;
     let feature;
-    let description;
     feature = layer.feature = layer.feature || {}; // Initialize feature
     feature.type = feature.type || "Feature"; // Initialize feature.type
-    let props = feature.properties = feature.properties || {}; // Initialize feature.properties
+    feature.properties = feature.properties || {}; // Initialize feature.properties
     layer.feature.properties.name = 'testing';
     layer.feature.properties.description = 'testing description';
     this.drawnItems.addLayer((event as L.DrawEvents.Created).layer);
