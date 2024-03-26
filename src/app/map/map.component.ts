@@ -105,14 +105,15 @@ export class MapComponent implements OnInit {
   public onDrawCreated(event: any) {
     let layer = event.layer;
     let feature;
-    feature = layer.feature = layer.feature || {}; // Initialize feature
-    feature.type = feature.type || "Feature"; // Initialize feature.type
-    feature.properties = feature.properties || {}; // Initialize feature.properties
-    layer.feature.properties.name = 'testing';
-    layer.feature.properties.description = 'testing description';
+    feature = layer.feature = layer.feature || {};
+    feature.type = feature.type || "Feature";
+    feature.properties = feature.properties || {};
+    layer.feature.properties.name = 'testing description';
+    layer.feature.properties.description = 'testing name';
     this.drawnItems.addLayer((event as L.DrawEvents.Created).layer);
     let geoJson = L.featureGroup([layer]).toGeoJSON();
-    this.callApiComponent.postApiEndPoints(geoJson).subscribe((data: any) => {
+    let jsonData = JSON.stringify(geoJson);
+    this.callApiComponent.postApiEndPoints(jsonData).subscribe((data: string) => {
       this.response.push(data);
     })
   }

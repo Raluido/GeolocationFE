@@ -1,8 +1,8 @@
 import { Component, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, catchError } from 'rxjs';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+
 
 @Component({
   selector: 'app-call-api',
@@ -20,20 +20,22 @@ export class CallApiComponent {
 
   constructor(private http: HttpClient) { }
 
-  headers = new HttpHeaders()
-    .set('Content-Type', 'application/geo+json')
-    .set('Access-Control-Allow-Origin', '*');
-
+  // httpOptions = {
+  //   headers: new HttpHeaders({
+  //     'Content-Type': 'text/html'
+  //   })
+  // }
 
   getApiEndPoints(): Observable<any[]> {
     return this.http.get<any>(environment.myApiUrl + '/locations');
   }
 
   postApiEndPoints(endPoint: any): Observable<any> {
-    return this.http.post<any>(environment.myApiUrl + '/locations', endPoint, {
-      'headers': this.headers
-    })
-      .pipe()
+    return this.http.post<any>(environment.myApiUrl + '/locations', endPoint)
+      .pipe(catchError(err => {
+        console.log('Handling error locally and rethrowing it...', err);
+        return throwError(err);
+      }))
   }
 
   getApiLatLng(search: string): Observable<any[]> {
