@@ -100,6 +100,13 @@ export class MapComponent implements OnInit {
         }
       }
     }
+
+    this.storedDraws();
+    this.layers.forEach(layer => this.drawnItems.addLayer(layer));
+  }
+
+  public storedDraws() {
+    this.callApiComponent.getApiEndPoints().subscribe(layers => this.layers = layers);
   }
 
   public onDrawCreated(event: any) {
