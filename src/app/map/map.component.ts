@@ -1,18 +1,20 @@
-import { Component, AfterViewInit, ViewChild, ElementRef, NgModule, OnInit } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef, NgModule, OnInit, ErrorHandler } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
 import { SearchComponent } from '../search/search.component';
 import { CallApiComponent } from '../call-api/call-api.component';
-import { ListMarkersComponent } from '../list-markers/list-markers.component';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { NgIf } from '@angular/common';
+import { Observable, catchError, map, throwError } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { ShapesElement } from '../marker-element';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [CallApiComponent, ListMarkersComponent, PaginationComponent, NgIf, LeafletModule, LeafletDrawModule],
+  imports: [CallApiComponent, PaginationComponent, NgIf, LeafletModule, LeafletDrawModule],
   templateUrl: './map.component.html',
   styleUrl: './map.component.css'
 })
@@ -23,8 +25,6 @@ export class MapComponent implements OnInit {
   @ViewChild('addNameNode') addNameNode!: ElementRef;
   @ViewChild('addDescriptionNode') addDescriptionNode!: ElementRef;
 
-  private map: L.Map;
-  private data: JSON;
   public shown: boolean = false;
   public drawLocal: any;
   public drawnItems: L.FeatureGroup;
@@ -42,6 +42,20 @@ export class MapComponent implements OnInit {
   constructor(
     private callApiComponent: CallApiComponent,
   ) { }
+
+  private handleError(error: HttpErrorResponse) {
+    if (error.status === 0) {
+      // A client-side or network error occurred. Handle it accordingly.
+      console.error('An error occurred:', error.error);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong.
+      console.error(
+        `Backend returned code ${error.status}, body was: `, error.error);
+    }
+    // Return an observable with a user-facing error message.
+    return throwError(() => new Error('Something bad happened; please try again later.'));
+  }
 
   public initMap(latLng?: L.LatLngLiteral) {
 
@@ -102,11 +116,17 @@ export class MapComponent implements OnInit {
     }
 
     this.storedDraws();
-    this.layers.forEach(layer => this.drawnItems.addLayer(layer));
   }
 
   public storedDraws() {
-    this.callApiComponent.getApiEndPoints().subscribe(layers => this.layers = layers);
+    this.callApiComponent.getApiEndPoints()
+      .pipe(map(result => this.dataToJson(result)),
+        catchError(this.handleError('storedDraws', []))
+      );
+  }
+
+  dataToJson(result: any) {
+    
   }
 
   public onDrawCreated(event: any) {

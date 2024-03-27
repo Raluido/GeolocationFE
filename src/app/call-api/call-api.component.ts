@@ -2,6 +2,7 @@ import { Component, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../environments/environment.development';
+import { ShapesElement } from '../marker-element';
 
 
 @Component({
@@ -42,8 +43,8 @@ export class CallApiComponent {
   //   };
   // }
 
-  getApiEndPoints(): Observable<L.Layer[]> {
-    return this.http.get<L.Layer[]>(environment.myApiUrl + '/locations');
+  getApiEndPoints(): Observable<ShapesElement[]> {
+    return this.http.jsonp(environment.myApiUrl + '/locations', 'callback');
   }
 
   postApiEndPoints(endPoint: any): Observable<any> {

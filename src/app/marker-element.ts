@@ -1,12 +1,7 @@
-export interface MarkerElement {
-    ccaa: string;
-    province: string;
-    city: string;
-    project: string;
-    description: Text;
-    date: Date;
-    lat: number;
-    lng: number;
+export interface ShapesElement {
+    name: string;
+    description: string;
+    location: Geometry;
 }
 
 export interface Datasource {
