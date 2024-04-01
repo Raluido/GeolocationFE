@@ -1,6 +1,6 @@
 import { Component, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError, map } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 import { ShapesElement } from '../marker-element';
 
@@ -21,30 +21,41 @@ export class CallApiComponent {
 
   constructor(private http: HttpClient) { }
 
-
-  // /**
-  //  * Handle Http operation that failed.
-  //  * Let the app continue.
-  //  *
-  //  * @param operation - name of the operation that failed
-  //  * @param result - optional value to return as the observable result
-  //  */
-  // private handleError<T>(operation = 'operation', result?: T) {
-  //   return (error: any): Observable<T> => {
-
-  //     // TODO: send the error to remote logging infrastructure
-  //     console.error(error); // log to console instead
-
-  //     // TODO: better job of transforming error for user consumption
-  //     this.log(`${operation} failed: ${error.message}`);
-
-  //     // Let the app keep running by returning an empty result.
-  //     return of(result as T);
-  //   };
-  // }
+  private handleError(error: HttpErrorResponse) {
+    if (error.status === 0) {
+      // A client-side or network error occurred. Handle it accordingly.
+      console.error('An error occurred:', error.error);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong.
+      console.error(
+        `Backend returned code ${error.status}, body was: `, error.error);
+    }
+    // Return an observable with a user-facing error message.
+    return throwError(() => new Error('Something bad happened; please try again later.'));
+  }
 
   getApiEndPoints(): Observable<ShapesElement[]> {
-    return this.http.jsonp(environment.myApiUrl + '/locations', 'callback');
+    return this.http.jsonp(environment.myApiUrl + '/locations', 'callback')
+      .pipe(map(result => this.JsonToArray(result)),
+        catchError(this.handleError)
+      );
+  }
+
+  JsonToArray(result: any) {
+    let toObj = JSON.parse(result);
+    let index: keyof typeof toObj;
+    let shapes: Array<ShapesElement> = [];
+    for (index in toObj) {
+      let shape: ShapesElement = {
+        name: toObj[index].name,
+        description: toObj[index].description,
+        location: toObj[index].location
+      }
+      shapes.push(shape);
+    }
+
+    return shapes;
   }
 
   postApiEndPoints(endPoint: any): Observable<any> {

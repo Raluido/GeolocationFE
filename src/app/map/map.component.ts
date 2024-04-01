@@ -115,18 +115,22 @@ export class MapComponent implements OnInit {
       }
     }
 
-    this.storedDraws();
+    this.callApiComponent.getApiEndPoints().subscribe();
   }
 
-  public storedDraws() {
-    this.callApiComponent.getApiEndPoints()
-      .pipe(map(result => this.dataToJson(result)),
-        catchError(this.handleError('storedDraws', []))
-      );
-  }
-
-  dataToJson(result: any) {
-    
+  JsonToArray(result: any) {
+    let toObj = JSON.parse(result);
+    let index: keyof typeof toObj;
+    let shapes: Array<ShapesElement> = [];
+    for (index in toObj) {
+      let shape: ShapesElement = {
+        name: toObj[index].name,
+        description: toObj[index].description,
+        location: toObj[index].location
+      }
+      shapes.push(shape);
+    }
+    return shapes;
   }
 
   public onDrawCreated(event: any) {
