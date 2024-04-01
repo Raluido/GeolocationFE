@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, catchError, throwError, map } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 import { ShapesElement } from '../marker-element';
+import { Shape } from '../shape.model';
 
 
 @Component({
@@ -35,35 +36,18 @@ export class CallApiComponent {
     return throwError(() => new Error('Something bad happened; please try again later.'));
   }
 
-  getApiEndPoints(): Observable<ShapesElement[]> {
-    return this.http.jsonp(environment.myApiUrl + '/locations', 'callback')
-      .pipe(map(result => this.JsonToArray(result)),
+  getApiEndPoints() {
+    return this.http.get(environment.myApiUrl + '/locations')
+      .pipe(
         catchError(this.handleError)
       );
   }
 
-  JsonToArray(result: any) {
-    let toObj = JSON.parse(result);
-    let index: keyof typeof toObj;
-    let shapes: Array<ShapesElement> = [];
-    for (index in toObj) {
-      let shape: ShapesElement = {
-        name: toObj[index].name,
-        description: toObj[index].description,
-        location: toObj[index].location
-      }
-      shapes.push(shape);
-    }
-
-    return shapes;
-  }
-
   postApiEndPoints(endPoint: any): Observable<any> {
     return this.http.post<any>(environment.myApiUrl + '/locations', endPoint)
-      .pipe(catchError(err => {
-        console.log('Handling error locally and rethrowing it...', err);
-        return throwError(err);
-      }))
+      .pipe(
+        catchError(this.handleError)
+      );
   }
 
   getApiLatLng(search: string): Observable<any[]> {

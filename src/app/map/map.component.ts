@@ -115,22 +115,23 @@ export class MapComponent implements OnInit {
       }
     }
 
-    this.callApiComponent.getApiEndPoints().subscribe();
-  }
-
-  JsonToArray(result: any) {
-    let toObj = JSON.parse(result);
-    let index: keyof typeof toObj;
-    let shapes: Array<ShapesElement> = [];
-    for (index in toObj) {
-      let shape: ShapesElement = {
-        name: toObj[index].name,
-        description: toObj[index].description,
-        location: toObj[index].location
-      }
-      shapes.push(shape);
-    }
-    return shapes;
+    this.callApiComponent.getApiEndPoints()
+      .subscribe((resp: { [key: string]: any }) => {
+        if (resp !== null) {
+          Object.keys(resp).forEach(key => {
+            let location = resp[key].location;
+            let shapeType = location.match(/[A-Z]*/i)[0].toLowerCase();
+            let latlngs;
+            if (shapeType === 'polygon') {
+              latlngs = location.split("((")[1].split("))")[0];
+            } else {
+              latlngs = location.split("(")[1].split(")")[0];
+            }
+            latlngs = '[' + latlngs.replace(',', '], [').replace(' ', ', ') + ']';
+            // L + '.' + shapeType + '(' + latlngs + ')';
+          })
+        }
+      });
   }
 
   public onDrawCreated(event: any) {
@@ -145,7 +146,7 @@ export class MapComponent implements OnInit {
     let geoJson = L.featureGroup([layer]).toGeoJSON();
     let jsonData = JSON.stringify(geoJson);
     this.callApiComponent.postApiEndPoints(jsonData).subscribe((data: string) => {
-      this.response.push(data);
+      // this.response.push(data);
     })
   }
 
