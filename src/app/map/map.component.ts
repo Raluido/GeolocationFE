@@ -33,6 +33,7 @@ export class MapComponent implements OnInit {
   public layersControl: any;
   public showLayer: boolean = false;
   public options: any;
+  public map: L.Map;
   public layers: L.Layer[];
   public layerGroup: L.LayerGroup;
   public totalPagesArr: Array<number>;
@@ -42,20 +43,6 @@ export class MapComponent implements OnInit {
   constructor(
     private callApiComponent: CallApiComponent,
   ) { }
-
-  private handleError(error: HttpErrorResponse) {
-    if (error.status === 0) {
-      // A client-side or network error occurred. Handle it accordingly.
-      console.error('An error occurred:', error.error);
-    } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong.
-      console.error(
-        `Backend returned code ${error.status}, body was: `, error.error);
-    }
-    // Return an observable with a user-facing error message.
-    return throwError(() => new Error('Something bad happened; please try again later.'));
-  }
 
   public initMap(latLng?: L.LatLngLiteral) {
 
@@ -117,19 +104,10 @@ export class MapComponent implements OnInit {
 
     this.callApiComponent.getApiEndPoints()
       .subscribe((resp: { [key: string]: any }) => {
-        if (resp !== null) {
-          Object.keys(resp).forEach(key => {
-            let location = resp[key].location;
-            let shapeType = location.match(/[A-Z]*/i)[0].toLowerCase();
-            let latlngs;
-            if (shapeType === 'polygon') {
-              latlngs = location.split("((")[1].split("))")[0];
-            } else {
-              latlngs = location.split("(")[1].split(")")[0];
-            }
-            latlngs = '[' + latlngs.replace(',', '], [').replace(' ', ', ') + ']';
-            // L + '.' + shapeType + '(' + latlngs + ')';
-          })
+        let featureCollection = resp[0].json_build_object;
+        if (featureCollection !== null) {
+          console.log(featureCollection.features);
+          L.geoJSON(featureCollection.features).addLayer();
         }
       });
   }
