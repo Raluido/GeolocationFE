@@ -3,7 +3,7 @@
         <div class="mapContainer">
             <div style="height: 300px;" leaflet leafletDraw [leafletDrawOptions]="drawOptions"
                 [leafletOptions]="options" [leafletLayersControl]="layersControl"
-                (leafletDrawCreated)="onDrawCreated($event)" style="height: 400px;">
+                (leafletDrawCreated)="onDrawCreated($event)" (leafletMapReady)="onMapReady($event)" style="height: 400px;">
                 <div [leafletLayer]="drawnItems"></div>
             </div>
         </div>

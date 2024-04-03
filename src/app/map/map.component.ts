@@ -29,11 +29,9 @@ export class MapComponent implements OnInit {
   public drawLocal: any;
   public drawnItems: L.FeatureGroup;
   public drawOptions: any;
-  public layer: L.Layer;
   public layersControl: any;
   public showLayer: boolean = false;
   public options: any;
-  public map: L.Map;
   public layers: L.Layer[];
   public layerGroup: L.LayerGroup;
   public totalPagesArr: Array<number>;
@@ -101,14 +99,13 @@ export class MapComponent implements OnInit {
         }
       }
     }
+  }
 
+  public onMapReady(map: L.Map) {
     this.callApiComponent.getApiEndPoints()
       .subscribe((resp: { [key: string]: any }) => {
         let featureCollection = resp[0].json_build_object;
-        if (featureCollection !== null) {
-          console.log(featureCollection.features);
-          L.geoJSON(featureCollection.features).addLayer();
-        }
+        L.geoJSON(featureCollection).addTo(map);
       });
   }
 
