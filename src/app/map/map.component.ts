@@ -7,10 +7,6 @@ import { SearchComponent } from '../search/search.component';
 import { CallApiComponent } from '../call-api/call-api.component';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { NgIf } from '@angular/common';
-import { Observable, catchError, map, throwError } from 'rxjs';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { ShapesElement } from '../marker-element';
-import { FeatureCollection, Feature } from 'geojson';
 
 @Component({
   selector: 'app-map',
@@ -62,17 +58,26 @@ export class MapComponent implements OnInit {
 
     this.drawnItems = L.featureGroup();
 
+    let DefaultIcon = L.icon({
+      iconUrl: 'assets/marker-icon.png',
+      shadowUrl: 'assets/marker-shadow.png'
+    });
+
+    L.Marker.prototype.options.icon = DefaultIcon;
+
+    let myIcons = new L.Icon({
+      iconSize: [25, 41],
+      iconAnchor: [13, 41],
+      iconUrl: 'assets/marker-icon.png',
+      iconRetinaUrl: 'assets/marker-icon-2x.png',
+      shadowUrl: 'assets/marker-shadow.png'
+    });
+
     this.drawOptions = {
       position: 'topright',
       draw: {
         marker: {
-          icon: L.icon({
-            iconSize: [25, 41],
-            iconAnchor: [13, 41],
-            iconUrl: '2b3e1faf89f94a4835397e7a43b4f77d.png',
-            iconRetinaUrl: '680f69f3c2e6b90c1812a813edf67fd7.png',
-            shadowUrl: 'a0c6cc1401c107b501efee6477816891.png'
-          })
+          icon: myIcons
         },
         circle: {
           shapeOptions: {
@@ -105,13 +110,18 @@ export class MapComponent implements OnInit {
   public onMapReady(map: L.Map) {
     this.callApiComponent.getApiEndPoints()
       .subscribe((resp: { [key: string]: any }) => {
-        let staticBreadcrumbs: GeoJSON.FeatureCollection<GeoJSON.Geometry>;
-        let layerGrp = L.layerGroup();
-        staticBreadcrumbs = resp[0].json_build_object;
-        L.geoJSON(staticBreadcrumbs).addTo(layerGrp);
-        layerGrp.addTo(map);
+        if (!resp[0].json_build_object.features === undefined) {
+          let staticBreadcrumbs = JSON.parse(resp[0].json_build_object);
+          let layerGrp = L.layerGroup();
+          let allShapes = L.geoJSON(staticBreadcrumbs).addTo(layerGrp);
+          allShapes.eachLayer(function (layer: L.Layer) {
+            console.log("yeah");
+          })
+          layerGrp.addTo(map);
+        }
       });
   }
+
 
   public onDrawCreated(event: any) {
     let layer = event.layer;
@@ -121,6 +131,7 @@ export class MapComponent implements OnInit {
     feature.properties = feature.properties || {};
     layer.feature.properties.name = 'testing description';
     layer.feature.properties.description = 'testing name';
+    if (layer.getRadius() !== undefined) layer.feature.properties.radius = layer.getRadius();
     this.drawnItems.addLayer((event as L.DrawEvents.Created).layer);
     let geoJson = L.featureGroup([layer]).toGeoJSON();
     let jsonData = JSON.stringify(geoJson);
