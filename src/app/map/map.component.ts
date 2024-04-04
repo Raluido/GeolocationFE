@@ -10,6 +10,7 @@ import { NgIf } from '@angular/common';
 import { Observable, catchError, map, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { ShapesElement } from '../marker-element';
+import { FeatureCollection, Feature } from 'geojson';
 
 @Component({
   selector: 'app-map',
@@ -104,8 +105,11 @@ export class MapComponent implements OnInit {
   public onMapReady(map: L.Map) {
     this.callApiComponent.getApiEndPoints()
       .subscribe((resp: { [key: string]: any }) => {
-        let featureCollection = resp[0].json_build_object;
-        L.geoJSON(featureCollection).addTo(map);
+        let staticBreadcrumbs: GeoJSON.FeatureCollection<GeoJSON.Geometry>;
+        let layerGrp = L.layerGroup();
+        staticBreadcrumbs = resp[0].json_build_object;
+        L.geoJSON(staticBreadcrumbs).addTo(layerGrp);
+        layerGrp.addTo(map);
       });
   }
 
