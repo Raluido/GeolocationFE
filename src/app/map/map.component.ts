@@ -109,14 +109,19 @@ export class MapComponent implements OnInit {
 
   public onMapReady(map: L.Map) {
     this.callApiComponent.getApiEndPoints()
-      .subscribe((resp: { [key: string]: any }) => {
-        if (!resp[0].json_build_object.features === undefined) {
-          let staticBreadcrumbs = JSON.parse(resp[0].json_build_object);
+      .subscribe((response: { [key: string]: any }) => {
+        let allShapes = JSON.parse(response[0].json_build_object);
+        let features = allShapes.features;
+        if (features !== null) {
+          for (const shape in features) {
+            if (allShapes.features[shape].properties.radius !== '') {
+              L.circle([allShapes.features[shape].geometry.coordinates[1], allShapes.features[shape].geometry.coordinates[0]], { radius: allShapes.features[shape].properties.radius }).addTo(map);
+              // delete allShapes.features[shape];
+            }
+          }
+          console.log(allShapes);
           let layerGrp = L.layerGroup();
-          let allShapes = L.geoJSON(staticBreadcrumbs).addTo(layerGrp);
-          allShapes.eachLayer(function (layer: L.Layer) {
-            console.log("yeah");
-          })
+          L.geoJSON(allShapes).addTo(layerGrp);
           layerGrp.addTo(map);
         }
       });
@@ -131,7 +136,8 @@ export class MapComponent implements OnInit {
     feature.properties = feature.properties || {};
     layer.feature.properties.name = 'testing description';
     layer.feature.properties.description = 'testing name';
-    if (layer.getRadius() !== undefined) layer.feature.properties.radius = layer.getRadius();
+    if (layer.options.radius !== undefined) layer.feature.properties.radius = layer.getRadius();
+    else layer.feature.properties.radius = null;
     this.drawnItems.addLayer((event as L.DrawEvents.Created).layer);
     let geoJson = L.featureGroup([layer]).toGeoJSON();
     let jsonData = JSON.stringify(geoJson);
