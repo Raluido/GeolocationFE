@@ -5,13 +5,14 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { LeafletDrawModule } from '@asymmetrik/ngx-leaflet-draw';
 import { SearchComponent } from '../search/search.component';
 import { CallApiComponent } from '../call-api/call-api.component';
+import { ListMarkersComponent } from '../list-markers/list-markers.component';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [CallApiComponent, PaginationComponent, NgIf, LeafletModule, LeafletDrawModule],
+  imports: [CallApiComponent, PaginationComponent, NgIf, LeafletModule, LeafletDrawModule, SearchComponent, ListMarkersComponent],
   templateUrl: './map.component.html',
   styleUrl: './map.component.css'
 })
@@ -29,31 +30,28 @@ export class MapComponent implements OnInit {
   public layersControl: any;
   public showLayer: boolean = false;
   public options: any;
-  public layers: L.Layer[];
+  public layers: any;
   public layerGroup: L.LayerGroup;
   public totalPagesArr: Array<number>;
   public pageSelected: number;
   public response: any;
+  public center: any;
+  public zoom: any;
 
   constructor(
     private callApiComponent: CallApiComponent,
   ) { }
 
-  public initMap(latLng?: L.LatLngLiteral) {
+  public initMap() {
 
-    this.layersControl = {
-      baseLayers: {
-        'Open Street Map': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' }),
-        'Open Cycle Map': L.tileLayer('https://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
-      },
-    }
+    let latLng = { lat: 46.879966, lng: -121.726909 };
 
     this.options = {
       layers: [
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
       ],
       zoom: 5,
-      center: L.latLng(46.879966, -121.726909)
+      center: latLng
     }
 
     this.drawnItems = L.featureGroup();
@@ -79,11 +77,7 @@ export class MapComponent implements OnInit {
         marker: {
           icon: myIcons
         },
-        circle: {
-          shapeOptions: {
-            color: '#d4af37'
-          }
-        },
+        circle: false,
         rectangle: {
           shapeOptions: {
             color: '#85bb65'
@@ -112,38 +106,39 @@ export class MapComponent implements OnInit {
       .subscribe((response: { [key: string]: any }) => {
         let allShapes = JSON.parse(response[0].json_build_object);
         let features = allShapes.features;
+        this.layers = features;
         if (features !== null) {
-          for (const shape in features) {
-            if (allShapes.features[shape].properties.radius !== '') {
-              L.circle([allShapes.features[shape].geometry.coordinates[1], allShapes.features[shape].geometry.coordinates[0]], { radius: allShapes.features[shape].properties.radius }).addTo(map);
-              // delete allShapes.features[shape];
-            }
-          }
-          console.log(allShapes);
           let layerGrp = L.layerGroup();
           L.geoJSON(allShapes).addTo(layerGrp);
           layerGrp.addTo(map);
+          console.log(this.layers);
         }
       });
   }
 
 
   public onDrawCreated(event: any) {
-    let layer = event.layer;
-    let feature;
-    feature = layer.feature = layer.feature || {};
-    feature.type = feature.type || "Feature";
-    feature.properties = feature.properties || {};
-    layer.feature.properties.name = 'testing description';
-    layer.feature.properties.description = 'testing name';
-    if (layer.options.radius !== undefined) layer.feature.properties.radius = layer.getRadius();
-    else layer.feature.properties.radius = null;
-    this.drawnItems.addLayer((event as L.DrawEvents.Created).layer);
-    let geoJson = L.featureGroup([layer]).toGeoJSON();
-    let jsonData = JSON.stringify(geoJson);
-    this.callApiComponent.postApiEndPoints(jsonData).subscribe((data: string) => {
-      // this.response.push(data);
-    })
+    let text = "Quieres añadir ésta nueva forma al map?";
+    if (confirm(text) == true) {
+      let layer = event.layer;
+      let feature;
+      feature = layer.feature = layer.feature || {};
+      feature.type = feature.type || "Feature";
+      feature.properties = feature.properties || {};
+      layer.feature.properties.name = 'testing description';
+      layer.feature.properties.description = 'testing name';
+      let geoJson = L.featureGroup([layer]).toGeoJSON();
+      let jsonData = JSON.stringify(geoJson);
+      this.callApiComponent.postApiEndPoints(jsonData).subscribe((data: any) => {
+        if (this.response) this.drawnItems.addLayer((event as L.DrawEvents.Created).layer);
+      })
+
+    }
+  }
+
+  public goToNewPos(latLng: L.LatLngLiteral) {
+    this.center = latLng;
+    this.zoom = 10;
   }
 
   ngOnInit(): void {

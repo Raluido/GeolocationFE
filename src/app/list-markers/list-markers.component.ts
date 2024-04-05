@@ -1,8 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule, NgFor } from '@angular/common';
 import { MapComponent } from '../map/map.component';
-import { LatLng } from 'leaflet';
-import { MarkerElement } from '../marker-element';
 
 @Component({
   selector: 'app-list-markers',
@@ -22,19 +20,14 @@ import { MarkerElement } from '../marker-element';
                 </tr>
             </thead>
             <tbody class="">
-              @for(index of data; track index.options.attribution?.indexOf; let i = $index) {
-                <tr class="">
-                  <td class="">{{index}}</td>
-                  <!-- <td class="">{{index.province}}</td>
-                  <td class="">{{index.city}}</td>
-                  <td class="">{{index.project}}</td>
-                  <td class="">{{index.description}}</td>
-                  <td class="">{{index.lat}}</td>
-                  <td class="">{{index.lng}}</td> -->
-                </tr>
-                }
+            
             </tbody>
         </table>
+        <div *ngFor="let item of data | keyvalue">  
+             <div class="" *nfFor="let item1 of item.value | keyvalue">
+                <p class="">{{ item1.name }}</p>
+             </div>
+        </div>
   `,
   styleUrl: './list-markers.component.css',
 })
@@ -43,7 +36,7 @@ export class ListMarkersComponent {
 
   constructor(private mapComponent: MapComponent) { }
 
-  @Input() data: L.Layer[];
+  @Input() data: any;
 
   // showPopup(index: number) {
   //   const latLngObj: LatLng = new LatLng(this.data[index].lat, this.data[index].lng);

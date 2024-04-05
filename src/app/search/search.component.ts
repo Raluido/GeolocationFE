@@ -40,6 +40,6 @@ export class SearchComponent {
   goToSearch(index: Feature) {
     this.resultsNode.nativeElement.style.display = "none";
     let latLng = { 'lat': index.properties.lat, 'lng': index.properties.lon };
-    this.mapComponent.initMap(latLng);
+    this.mapComponent.goToNewPos(latLng);
   }
 }
