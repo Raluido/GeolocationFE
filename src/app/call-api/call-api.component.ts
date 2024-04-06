@@ -36,8 +36,8 @@ export class CallApiComponent {
     return throwError(() => new Error('Something bad happened; please try again later.'));
   }
 
-  getApiEndPoints() {
-    return this.http.get(environment.myApiUrl + '/locations')
+  getApiEndPoints(offset: any) {
+    return this.http.get(environment.myApiUrl + '/locations', offset)
       .pipe(
         catchError(this.handleError)
       );

@@ -1,18 +1,17 @@
 <div class="mainContainer">
+    <div class="searchResetContainer">
+        <app-search></app-search>
+    </div>
     <div class="mapAndEnd">
-        <div class="searchResetContainer">
-            <app-search></app-search>
-        </div>
         <div class="mapContainer">
             <div style="height: 300px;" leaflet leafletDraw [leafletDrawOptions]="drawOptions"
                 [leafletOptions]="options" (leafletDrawCreated)="onDrawCreated($event)" [(leafletCenter)]="center"
-                [(leafletZoom)]="zoom" (leafletMapReady)="onMapReady($event)" style="height: 400px;">
+                [(leafletZoom)]="zoom" (leafletMapReady)="onMapReady($event)" appLoadShapes style="height: 400px;">
                 <div [leafletLayer]="drawnItems"></div>
             </div>
         </div>
         <div class="endPoints">
             <h3 class="">Listado de localizaciones</h3>
-
             <app-list-markers [data]="layers">
             </app-list-markers>
 

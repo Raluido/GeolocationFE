@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ViewChild, ElementRef, NgModule, OnInit, ErrorHandler } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef, NgModule, OnInit, ErrorHandler, viewChild } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
@@ -22,6 +22,7 @@ export class MapComponent implements OnInit {
   @ViewChild('addAddEndPointNode') addAddEndPointNode!: ElementRef;
   @ViewChild('addNameNode') addNameNode!: ElementRef;
   @ViewChild('addDescriptionNode') addDescriptionNode!: ElementRef;
+  // @ViewChild('appLoadShapes');
 
   public shown: boolean = false;
   public drawLocal: any;
@@ -37,6 +38,7 @@ export class MapComponent implements OnInit {
   public response: any;
   public center: any;
   public zoom: any;
+  public offset: any;
 
   constructor(
     private callApiComponent: CallApiComponent,
@@ -102,7 +104,7 @@ export class MapComponent implements OnInit {
   }
 
   public onMapReady(map: L.Map) {
-    this.callApiComponent.getApiEndPoints()
+    this.callApiComponent.getApiEndPoints(this.offset)
       .subscribe((response: { [key: string]: any }) => {
         let allShapes = JSON.parse(response[0].json_build_object);
         let features = allShapes.features;
@@ -111,14 +113,13 @@ export class MapComponent implements OnInit {
           let layerGrp = L.layerGroup();
           L.geoJSON(allShapes).addTo(layerGrp);
           layerGrp.addTo(map);
-          console.log(this.layers);
         }
       });
   }
 
 
   public onDrawCreated(event: any) {
-    let text = "Quieres añadir ésta nueva forma al map?";
+    let text = "Quieres añadir esta nueva forma al map?";
     if (confirm(text) == true) {
       let layer = event.layer;
       let feature;
@@ -132,7 +133,6 @@ export class MapComponent implements OnInit {
       this.callApiComponent.postApiEndPoints(jsonData).subscribe((data: any) => {
         if (this.response) this.drawnItems.addLayer((event as L.DrawEvents.Created).layer);
       })
-
     }
   }
 
@@ -141,11 +141,53 @@ export class MapComponent implements OnInit {
     this.zoom = 10;
   }
 
+  private pagination(page: number, items: L.LayerGroup) {
+    let itemsPerPage = 5;
+    let totalPages = items.getLayers.length / itemsPerPage;
+    let totalPagesRoundedd = Math.floor(totalPages);
+    if (totalPages != totalPagesRoundedd) totalPagesRoundedd += 1;
+    let startIndex = (page - 1) * itemsPerPage;
+    let endIndex = startIndex + itemsPerPage;
+
+    let i = 0;
+    items.eachLayer((layer) => {
+      i += 1;
+      if (i < startIndex || i > endIndex) items.removeLayer(layer);
+    })
+
+    let temp: Array<number> = [];
+    if (typeof (page) == 'string') page = parseInt(page);
+    if (totalPagesRoundedd < 4) {
+      for (let index = 1; index <= totalPagesRoundedd; index++) {
+        temp[index] = index;
+      }
+    } else {
+      if (page = totalPagesRoundedd) {
+        temp = [page - 2, page - 1, page];
+      } else if (page < totalPagesRoundedd) {
+        temp = [page - 1, page, page + 1];
+      }
+    }
+
+    this.totalPagesArr = temp;
+    this.pageSelected = page;
+
+    return items;
+  }
+
+  // getShapes() {
+  //   this.appLoadShapes.getShapes();
+  // }
+
   ngOnInit(): void {
     this.initMap();
   }
 
 }
+
+
+
+
 
 // private renderMap() {
 //   let layer = new L.TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png');
@@ -212,40 +254,6 @@ export class MapComponent implements OnInit {
 
 // public closeAddEndPoint() {
 //   this.addAddEndPointNode.nativeElement.style.display = "none";
-// }
-
-// private pagination(page: number, items: L.LayerGroup) {
-//   let itemsPerPage = 10;
-//   let totalPages = items.getLayers.length / itemsPerPage;
-//   let totalPagesRoundedd = Math.floor(totalPages);
-//   if (totalPages != totalPagesRoundedd) totalPagesRoundedd += 1;
-//   let startIndex = (page - 1) * itemsPerPage;
-//   let endIndex = startIndex + itemsPerPage;
-
-//   let i = 0;
-//   items.eachLayer((layer) => {
-//     i += 1;
-//     if (i < startIndex || i > endIndex) items.removeLayer(layer);
-//   })
-
-//   let temp: Array<number> = [];
-//   if (typeof (page) == 'string') page = parseInt(page);
-//   if (totalPagesRoundedd < 4) {
-//     for (let index = 1; index <= totalPagesRoundedd; index++) {
-//       temp[index] = index;
-//     }
-//   } else {
-//     if (page = totalPagesRoundedd) {
-//       temp = [page - 2, page - 1, page];
-//     } else if (page < totalPagesRoundedd) {
-//       temp = [page - 1, page, page + 1];
-//     }
-//   }
-
-//   this.totalPagesArr = temp;
-//   this.pageSelected = page;
-
-//   return items;
 // }
 
 // private filterByArea(data: JSON) {

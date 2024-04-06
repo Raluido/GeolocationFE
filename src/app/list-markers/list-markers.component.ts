@@ -10,24 +10,23 @@ import { MapComponent } from '../map/map.component';
       <table class="table">
             <thead class="">
                 <tr class="">
-                    <th class="">CCAA</th>
-                    <th class="">Provincia</th>
-                    <th class="">Ciudad</th>
                     <th class="">Proyecto</th>
                     <th class="">Descripción</th>
-                    <th class="">Latitud</th>
-                    <th class="">Longitud</th>
+                    <th class="">Tipo</th>
+                    <th class="">Coordenadas</th>
                 </tr>
             </thead>
             <tbody class="">
-            
+            @for(item of data; track item.properties.name){
+                <tr class="">
+                  <td class="">{{item.properties.name}}</td>
+                  <td class="">{{item.properties.description}}</td>
+                  <td class="">{{item.geometry.type}}</td>
+                  <td class="">{{item.geometry.coordinates}}</td>
+                </tr>            
+          }
             </tbody>
-        </table>
-        <div *ngFor="let item of data | keyvalue">  
-             <div class="" *nfFor="let item1 of item.value | keyvalue">
-                <p class="">{{ item1.name }}</p>
-             </div>
-        </div>
+    </table>
   `,
   styleUrl: './list-markers.component.css',
 })
