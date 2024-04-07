@@ -105,28 +105,28 @@ export class MapComponent implements OnInit {
   }
 
   public onMapReady(map: L.Map) {
-    this.callApiComponent.getApiEndPoints(this.offset)
+    this.offset = 0;
+    this.loadShapes(map, this.offset);
+  }
+
+  public nextPagination(map: L.Map) {
+    this.offset += 5;
+    this.loadShapes(map, this.offset);
+  }
+
+  public prevPagination(map: L.Map) {
+    this.offset -= 5;
+    this.loadShapes(map, this.offset);
+  }
+
+  private loadShapes(map: L.Map, offset: number) {
+    this.callApiComponent.getApiEndPoints(offset)
       .subscribe((response: { [key: string]: any }) => {
         let allShapes = JSON.parse(response[0].json_build_object);
         let features = allShapes.features;
         this.layers = features;
         if (features !== null) {
           this.layerGrp = L.layerGroup();
-          L.geoJSON(allShapes).addTo(this.layerGrp);
-          this.layerGrp.addTo(map);
-        }
-      });
-  }
-
-  public loadData(map: L.Map) {
-    this.callApiComponent.getApiEndPoints(this.offset)
-      .subscribe((response: { [key: string]: any }) => {
-        let allShapes = JSON.parse(response[0].json_build_object);
-        let features = allShapes.features;
-        this.layers = features;
-        if (features !== null) {
-          map.removeLayer(this.layerGrp);
-          this.layerGrp = new L.LayerGroup;
           L.geoJSON(allShapes).addTo(this.layerGrp);
           this.layerGrp.addTo(map);
         }
@@ -155,40 +155,6 @@ export class MapComponent implements OnInit {
   public goToNewPos(latLng: L.LatLngLiteral) {
     this.center = latLng;
     this.zoom = 10;
-  }
-
-  private pagination(page: number, items: L.LayerGroup) {
-    let itemsPerPage = 5;
-    let totalPages = items.getLayers.length / itemsPerPage;
-    let totalPagesRoundedd = Math.floor(totalPages);
-    if (totalPages != totalPagesRoundedd) totalPagesRoundedd += 1;
-    let startIndex = (page - 1) * itemsPerPage;
-    let endIndex = startIndex + itemsPerPage;
-
-    let i = 0;
-    items.eachLayer((layer) => {
-      i += 1;
-      if (i < startIndex || i > endIndex) items.removeLayer(layer);
-    })
-
-    let temp: Array<number> = [];
-    if (typeof (page) == 'string') page = parseInt(page);
-    if (totalPagesRoundedd < 4) {
-      for (let index = 1; index <= totalPagesRoundedd; index++) {
-        temp[index] = index;
-      }
-    } else {
-      if (page = totalPagesRoundedd) {
-        temp = [page - 2, page - 1, page];
-      } else if (page < totalPagesRoundedd) {
-        temp = [page - 1, page, page + 1];
-      }
-    }
-
-    this.totalPagesArr = temp;
-    this.pageSelected = page;
-
-    return items;
   }
 
   ngOnInit(): void {
