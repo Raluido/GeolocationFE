@@ -7,12 +7,13 @@ import { SearchComponent } from '../search/search.component';
 import { CallApiComponent } from '../call-api/call-api.component';
 import { ListMarkersComponent } from '../list-markers/list-markers.component';
 import { PaginationComponent } from '../pagination/pagination.component';
+import { LoadShapesDirective } from '../load-shapes.directive';
 import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [CallApiComponent, PaginationComponent, NgIf, LeafletModule, LeafletDrawModule, SearchComponent, ListMarkersComponent],
+  imports: [CallApiComponent, PaginationComponent, NgIf, LeafletModule, LeafletDrawModule, SearchComponent, ListMarkersComponent, LoadShapesDirective],
   templateUrl: './map.component.html',
   styleUrl: './map.component.css'
 })
@@ -22,7 +23,6 @@ export class MapComponent implements OnInit {
   @ViewChild('addAddEndPointNode') addAddEndPointNode!: ElementRef;
   @ViewChild('addNameNode') addNameNode!: ElementRef;
   @ViewChild('addDescriptionNode') addDescriptionNode!: ElementRef;
-  // @ViewChild('appLoadShapes');
 
   public shown: boolean = false;
   public drawLocal: any;
@@ -39,6 +39,7 @@ export class MapComponent implements OnInit {
   public center: any;
   public zoom: any;
   public offset: any;
+  public layerGrp: any;
 
   constructor(
     private callApiComponent: CallApiComponent,
@@ -110,9 +111,24 @@ export class MapComponent implements OnInit {
         let features = allShapes.features;
         this.layers = features;
         if (features !== null) {
-          let layerGrp = L.layerGroup();
-          L.geoJSON(allShapes).addTo(layerGrp);
-          layerGrp.addTo(map);
+          this.layerGrp = L.layerGroup();
+          L.geoJSON(allShapes).addTo(this.layerGrp);
+          this.layerGrp.addTo(map);
+        }
+      });
+  }
+
+  public loadData(map: L.Map) {
+    this.callApiComponent.getApiEndPoints(this.offset)
+      .subscribe((response: { [key: string]: any }) => {
+        let allShapes = JSON.parse(response[0].json_build_object);
+        let features = allShapes.features;
+        this.layers = features;
+        if (features !== null) {
+          map.removeLayer(this.layerGrp);
+          this.layerGrp = new L.LayerGroup;
+          L.geoJSON(allShapes).addTo(this.layerGrp);
+          this.layerGrp.addTo(map);
         }
       });
   }
@@ -174,10 +190,6 @@ export class MapComponent implements OnInit {
 
     return items;
   }
-
-  // getShapes() {
-  //   this.appLoadShapes.getShapes();
-  // }
 
   ngOnInit(): void {
     this.initMap();

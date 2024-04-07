@@ -26,6 +26,12 @@
     border: 1px solid lightgray;
 }
 
+.mapContainer button {
+    position: absolute;
+    z-index: 500;
+    bottom: 0;
+}
+
 .addEndPoint {
     position: absolute;
     z-index: 99999;

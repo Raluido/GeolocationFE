@@ -6,8 +6,9 @@
         <div class="mapContainer">
             <div style="height: 300px;" leaflet leafletDraw [leafletDrawOptions]="drawOptions"
                 [leafletOptions]="options" (leafletDrawCreated)="onDrawCreated($event)" [(leafletCenter)]="center"
-                [(leafletZoom)]="zoom" (leafletMapReady)="onMapReady($event)" appLoadShapes style="height: 400px;">
+                [(leafletZoom)]="zoom" (leafletMapReady)="onMapReady($event)" style="height: 400px;">
                 <div [leafletLayer]="drawnItems"></div>
+                <button appLoadShapes>click</button>
             </div>
         </div>
         <div class="endPoints">
