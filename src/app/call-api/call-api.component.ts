@@ -37,7 +37,9 @@ export class CallApiComponent {
   }
 
   getApiEndPoints(offset: any) {
-    return this.http.get(environment.myApiUrl + '/locations', offset)
+    return this.http.get(environment.myApiUrl + '/locations/' + offset,
+
+    )
       .pipe(
         catchError(this.handleError)
       );

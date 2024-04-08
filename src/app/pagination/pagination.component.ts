@@ -6,7 +6,7 @@ import { MapComponent } from '../map/map.component';
   standalone: true,
   imports: [],
   template: `
-  <!-- <div id="pagination">
+  <div id="pagination">
     @for(paginate of paginates; track paginate) {
       @if(pageSelected == paginate){
         <div id="pages" (click)="goToPage($event)" style="color:blue;">{{ paginate }}</div>
@@ -14,7 +14,7 @@ import { MapComponent } from '../map/map.component';
         <div id="pages" (click)="goToPage($event)">{{ paginate }}</div>
       }
     }
-  </div> -->
+  </div>
   `,
   styleUrl: './pagination.component.css'
 })
@@ -25,7 +25,7 @@ export class PaginationComponent {
   @Input() paginates: Array<number>;
   @Input() pageSelected: number;
 
-  // goToPage(event: any) {
-  //   this.mapComponent.addStuffToMap(event.target.innerHTML);
-  // };
+  goToPage(event: any) {
+    this.mapComponent.;
+  };
 }

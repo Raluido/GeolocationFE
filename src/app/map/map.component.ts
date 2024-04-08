@@ -33,16 +33,19 @@ export class MapComponent implements OnInit {
   public options: any;
   public layers: any;
   public layerGroup: L.LayerGroup;
-  public totalPagesArr: Array<number>;
+  public totalPages: number;
   public pageSelected: number;
+  public paginationArr: number[] = [];
   public response: any;
   public center: any;
   public zoom: any;
   public offset: any;
   public layerGrp: any;
 
+
+
   constructor(
-    private callApiComponent: CallApiComponent,
+    private callApiComponent: CallApiComponent
   ) { }
 
   public initMap() {
@@ -105,17 +108,12 @@ export class MapComponent implements OnInit {
   }
 
   public onMapReady(map: L.Map) {
-    this.offset = 0;
+    this.offset = 1;
     this.loadShapes(map, this.offset);
   }
 
-  public nextPagination(map: L.Map) {
-    this.offset += 5;
-    this.loadShapes(map, this.offset);
-  }
-
-  public prevPagination(map: L.Map) {
-    this.offset -= 5;
+  public jumpToPage(map: L.Map, pageSelected: number) {
+    this.pageSelected = pageSelected;
     this.loadShapes(map, this.offset);
   }
 
@@ -124,13 +122,26 @@ export class MapComponent implements OnInit {
       .subscribe((response: { [key: string]: any }) => {
         let allShapes = JSON.parse(response[0].json_build_object);
         let features = allShapes.features;
-        this.layers = features;
         if (features !== null) {
+          this.layers = features;
+          this.pagination(features[0].properties.total);
           this.layerGrp = L.layerGroup();
           L.geoJSON(allShapes).addTo(this.layerGrp);
           this.layerGrp.addTo(map);
         }
       });
+  }
+
+  private pagination(items: number) {
+    let itemsPerPage = items / 5;
+    let itemsPerPageFlr = Math.floor(itemsPerPage);
+    itemsPerPage = itemsPerPage - itemsPerPageFlr;
+    if (itemsPerPage > 0) {
+      for (let i = 1; i <= itemsPerPageFlr + 1; i++) this.paginationArr.push(i);
+
+    } else {
+      for (let i = 1; i <= itemsPerPage; i++) this.paginationArr.push(i);
+    }
   }
 
 
