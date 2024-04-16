@@ -41,6 +41,7 @@ export class MapComponent implements OnInit {
   public zoom: any;
   public offset: any;
   public layerGrp: any;
+  public map: L.Map;
 
 
 
@@ -108,17 +109,19 @@ export class MapComponent implements OnInit {
   }
 
   public onMapReady(map: L.Map) {
-    this.offset = 1;
-    this.loadShapes(map, this.offset);
+    this.map = map;
+    this.pageSelected = 1;
+    this.loadShapes(this.pageSelected);
   }
 
-  public jumpToPage(map: L.Map, pageSelected: number) {
+  public jumpToPage(pageSelected: number) {
     this.pageSelected = pageSelected;
-    this.loadShapes(map, this.offset);
+    this.layerGrp.clearLayers();
+    this.loadShapes(pageSelected);
   }
 
-  private loadShapes(map: L.Map, offset: number) {
-    this.callApiComponent.getApiEndPoints(offset)
+  private loadShapes(pageSelected: number) {
+    this.callApiComponent.getApiEndPoints(pageSelected)
       .subscribe((response: { [key: string]: any }) => {
         let allShapes = JSON.parse(response[0].json_build_object);
         let features = allShapes.features;
@@ -127,7 +130,7 @@ export class MapComponent implements OnInit {
           this.pagination(features[0].properties.total);
           this.layerGrp = L.layerGroup();
           L.geoJSON(allShapes).addTo(this.layerGrp);
-          this.layerGrp.addTo(map);
+          this.layerGrp.addTo(this.map);
         }
       });
   }
@@ -136,6 +139,7 @@ export class MapComponent implements OnInit {
     let itemsPerPage = items / 5;
     let itemsPerPageFlr = Math.floor(itemsPerPage);
     itemsPerPage = itemsPerPage - itemsPerPageFlr;
+    this.paginationArr = [];
     if (itemsPerPage > 0) {
       for (let i = 1; i <= itemsPerPageFlr + 1; i++) this.paginationArr.push(i);
 

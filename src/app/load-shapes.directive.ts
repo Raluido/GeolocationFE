@@ -16,9 +16,10 @@ export class LoadShapesDirective {
     this.mapComponent = mapComponent;
   }
 
-  @HostListener('click', ['$event.target']) getShapes() {
+  @HostListener('click', ['$event.target']) getShapes(btn: any) {
     if (null != this.leafletDirective.getMap()) {
-      this.mapComponent.prevPagination(this.leafletDirective.map);
+      console.log(this.leafletDirective.map);
+      // this.mapComponent.jumpToPage(this.leafletDirective.map, );
     }
   }
 

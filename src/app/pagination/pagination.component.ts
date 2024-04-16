@@ -9,9 +9,9 @@ import { MapComponent } from '../map/map.component';
   <div id="pagination">
     @for(paginate of paginates; track paginate) {
       @if(pageSelected == paginate){
-        <div id="pages" (click)="goToPage($event)" style="color:blue;">{{ paginate }}</div>
+        <div id="pages" (click)="goToPage(paginate)" style="color:blue;">{{ paginate }}</div>
       } @else {
-        <div id="pages" (click)="goToPage($event)">{{ paginate }}</div>
+        <div id="pages" (click)="goToPage(paginate)">{{ paginate }}</div>
       }
     }
   </div>
@@ -25,7 +25,7 @@ export class PaginationComponent {
   @Input() paginates: Array<number>;
   @Input() pageSelected: number;
 
-  goToPage(event: any) {
-    this.mapComponent.;
+  goToPage(paginate: number) {
+    this.mapComponent.jumpToPage(paginate);
   };
 }
