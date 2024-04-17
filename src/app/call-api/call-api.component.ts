@@ -1,10 +1,7 @@
 import { Component, Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, throwError, map } from 'rxjs';
 import { environment } from '../../environments/environment.development';
-import { ShapesElement } from '../marker-element';
-import { Shape } from '../shape.model';
-
 
 @Component({
   selector: 'app-call-api',

@@ -8,8 +8,6 @@
                 [leafletOptions]="options" (leafletDrawCreated)="onDrawCreated($event)" [(leafletCenter)]="centerMap"
                 [(leafletZoom)]="zoomMap" (leafletMapReady)="onMapReady($event)" style="height: 400px;">
                 <div [leafletLayer]="drawnItems"></div>
-                <div class="click" appLoadShapes style="left:1em">Anterior</div>
-                <div class="click" appLoadShapes style="left:6em">Siguiente</div>
             </div>
         </div>
         <div class="endPoints">

@@ -1,4 +1,5 @@
-import { Component, AfterViewInit, ViewChild, ElementRef, NgModule, OnInit, ErrorHandler, viewChild } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { NgIf } from '@angular/common';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
@@ -8,7 +9,6 @@ import { CallApiComponent } from '../call-api/call-api.component';
 import { ListMarkersComponent } from '../list-markers/list-markers.component';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { LoadShapesDirective } from '../load-shapes.directive';
-import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-map',
@@ -46,13 +46,13 @@ export class MapComponent implements OnInit {
 
   public initMap() {
 
-    this.latLngLiteral = { lat: 46.879966, lng: -121.726909 };
+    this.latLngLiteral = { lat: 0, lng: 0 };
 
     this.options = {
       layers: [
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
       ],
-      zoom: 5,
+      zoom: 0,
       center: this.latLngLiteral
     }
 
@@ -114,6 +114,11 @@ export class MapComponent implements OnInit {
         const features = allShapes.features;
         if (features !== null) {
           this.layers = features;
+          let itemSelectedCoordinates = features[0].geometry.coordinates;
+          let shape = new L.Polygon(itemSelectedCoordinates);
+          console.log(shape.getBounds().getCenter());
+          // this.centerMap = shape.getBounds().getCenter();
+          // this.zoomMap = 8;
           this.pagination(features[0].properties.total);
           this.layerGroup = L.layerGroup();
           L.geoJSON(allShapes).addTo(this.layerGroup);
