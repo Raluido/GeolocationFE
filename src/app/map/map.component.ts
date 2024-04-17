@@ -9,6 +9,7 @@ import { CallApiComponent } from '../call-api/call-api.component';
 import { ListMarkersComponent } from '../list-markers/list-markers.component';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { LoadShapesDirective } from '../load-shapes.directive';
+import { GeoJsonObject, GeoJsonTypes } from 'geojson';
 
 @Component({
   selector: 'app-map',
@@ -114,17 +115,42 @@ export class MapComponent implements OnInit {
         const features = allShapes.features;
         if (features !== null) {
           this.layers = features;
-          let itemSelectedCoordinates = features[0].geometry.coordinates;
-          let shape = new L.Polygon(itemSelectedCoordinates);
-          console.log(shape.getBounds().getCenter());
-          // this.centerMap = shape.getBounds().getCenter();
-          // this.zoomMap = 8;
-          this.pagination(features[0].properties.total);
+          const itemSelected = features[0];
+          this.getCenterMap(itemSelected);
+          this.pagination(itemSelected.properties.total);
           this.layerGroup = L.layerGroup();
           L.geoJSON(allShapes).addTo(this.layerGroup);
           this.layerGroup.addTo(this.map);
         }
       });
+  }
+
+  public getCenterMap(itemSelected: any) {
+    console.log(itemSelected);
+    let shape;
+    switch (itemSelected.geometry.type) {
+      case 'Polygon':
+        shape = (new L.Polygon(itemSelected.geometry.coordinates)).getBounds().getCenter();
+        this.centerMap = this.inverseLatlng(shape);
+        break;
+      case 'Polyline':
+        shape = (new L.Polyline(itemSelected.geometry.coordinates)).getBounds().getCenter();
+        this.centerMap = this.inverseLatlng(shape);
+        break;
+      default:
+        shape = new L.LatLng(itemSelected.geometry.coordinates[1], itemSelected.geometry.coordinates[0]);
+        this.centerMap = shape;
+    }
+    this.zoomMap = 6;
+    L.popup().setLatLng
+  }
+
+  private inverseLatlng(shape: L.LatLng) {
+    let latlngInverse = [];
+    latlngInverse = [shape.lng, shape.lat];
+    shape.lat = latlngInverse[0];
+    shape.lng = latlngInverse[1];
+    return shape;
   }
 
   private pagination(items: number) {

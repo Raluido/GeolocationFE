@@ -76,3 +76,21 @@ export interface RootObject {
     features: Feature[];
     query: Query;
 }
+
+export interface GeoJsonObj {
+    type: string
+    geometry: Geometry
+    properties: Properties
+}
+
+export interface Geometry {
+    type: string
+    coordinates: number[]
+}
+
+export interface Properties {
+    gid: number
+    name: string
+    total: number
+    description: string
+}

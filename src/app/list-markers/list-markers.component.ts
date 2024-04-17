@@ -18,7 +18,7 @@ import { MapComponent } from '../map/map.component';
             </thead>
             <tbody class="">
             @for(item of data; track item.properties.name){
-                <tr class="">
+                <tr class="" (click)="goToShape(item)">
                   <td class="">{{item.properties.name}}</td>
                   <td class="">{{item.properties.description}}</td>
                   <td class="">{{item.geometry.type}}</td>
@@ -36,6 +36,10 @@ export class ListMarkersComponent {
   constructor(private mapComponent: MapComponent) { }
 
   @Input() data: any;
+
+  public goToShape(item: any) {
+    this.mapComponent.getCenterMap(item);
+  }
 
   // showPopup(index: number) {
   //   const latLngObj: LatLng = new LatLng(this.data[index].lat, this.data[index].lng);
